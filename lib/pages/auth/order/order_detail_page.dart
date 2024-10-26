@@ -53,8 +53,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void initState() {
     super.initState();
     currentOrder = Rx<Order>(widget.order);
-    historyController.initializeOrderMap(widget.order);
-    chatController.startPolling(widget.order.id.toString());
+    historyController.initializeOrderMap(currentOrder.value);
+    chatController.startPolling(currentOrder.value.id.toString());
     startOrderStatusUpdates();
     //historyController.getNearestDriver();
      ever(currentOrder, (Order order) {
@@ -72,43 +72,43 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     historyController.driverLocationTimer?.cancel();
     chatController.stopPolling();
 
-   Get.defaultDialog(
-      title: 'Pesanan Dibatalkan',
-      titleStyle: TextStyle(fontWeight: FontWeight.bold),
-      content: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 50,
-          ),
-          SizedBox(height: 16),
-          Text('Pesanan Anda telah dibatalkan.'),
-          SizedBox(height: 8),
-          Text('Apakah Anda ingin membuat pesanan baru?'),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            // Kembali ke halaman utama
-            Get.offAll(() => BottomNavigation());
-            landingController.changeTab(0); // Tab untuk menu order
-          }, 
-          child: Text(
-            'Tidak',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () => Get.back(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: OkejekTheme.primary_color,
-          ),
-          child: Text('Ya, Pesan Lagi'),
-        ),
-      ],
-    );
+  //  Get.defaultDialog(
+  //     title: 'Pesanan Dibatalkan',
+  //     titleStyle: TextStyle(fontWeight: FontWeight.bold),
+  //     content: Column(
+  //       children: [
+  //         Icon(
+  //           Icons.error_outline,
+  //           color: Colors.red,
+  //           size: 50,
+  //         ),
+  //         SizedBox(height: 16),
+  //         Text('Pesanan Anda telah dibatalkan.'),
+  //         SizedBox(height: 8),
+  //         Text('Apakah Anda ingin membuat pesanan baru?'),
+  //       ],
+  //     ),
+  //     actions: [
+  //       TextButton(
+  //         onPressed: () {
+  //           // Kembali ke halaman utama
+  //           Get.offAll(() => BottomNavigation());
+  //           landingController.changeTab(0); // Tab untuk menu order
+  //         }, 
+  //         child: Text(
+  //           'Tidak',
+  //           style: TextStyle(color: Colors.grey),
+  //         ),
+  //       ),
+  //       ElevatedButton(
+  //         onPressed: () => Get.back(),
+  //         style: ElevatedButton.styleFrom(
+  //           backgroundColor: OkejekTheme.primary_color,
+  //         ),
+  //         child: Text('Ya, Pesan Lagi'),
+  //       ),
+  //     ],
+  //   );
   }
   void handleOrderCompletion() async {
     // Stop all ongoing processes
@@ -141,7 +141,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future<void> refreshOrderStatus() async {
     try {
-      Order updatedOrder = await orderController.getOrderDetails(widget.order.id);
+      Order updatedOrder = await orderController.getOrderDetails(currentOrder.value.id);
       if (updatedOrder.status != currentOrder.value.status) {
         currentOrder.value = updatedOrder;
         historyController.updateDriverLocation(updatedOrder);
@@ -231,15 +231,15 @@ String _getStatusUpdateMessage(int status) {
 
 //   isRefreshing.value = true;
 //   try{
-//     Order updateOrder = await orderController.getOrderDetails(widget.order.id);
+//     Order updateOrder = await orderController.getOrderDetails(currentOrder.value.id);
 //   }
 // }
   @override
   Widget build(BuildContext context) {
     print("di order detail page ${historyController.driverLocation}");
 
-    double lat = double.parse(widget.order.originLatlng.split(",")[0]);
-    double lng = double.parse(widget.order.originLatlng.split(",")[1]);
+    double lat = double.parse(currentOrder.value.originLatlng.split(",")[0]);
+    double lng = double.parse(currentOrder.value.originLatlng.split(",")[1]);
 
     final CameraPosition _kInitialPosition = CameraPosition(
       target: LatLng(lat, lng),
@@ -270,10 +270,10 @@ String _getStatusUpdateMessage(int status) {
                         target: LatLng(
                           historyController.driverLat.value != 0
                               ? historyController.driverLat.value
-                              : double.parse(widget.order.originLatlng.split(",")[0]),
+                              : double.parse(currentOrder.value.originLatlng.split(",")[0]),
                           historyController.driverLng.value != 0
                               ? historyController.driverLng.value
-                              : double.parse(widget.order.originLatlng.split(",")[1]),
+                              : double.parse(currentOrder.value.originLatlng.split(",")[1]),
                         ),
                         zoom: 15.0,
                       ),
@@ -407,7 +407,7 @@ String _getStatusUpdateMessage(int status) {
 
 Widget _buildOrderTypeText() {
   return Text(
-    _getOrderTypeName(widget.order.typeAsInt),
+    _getOrderTypeName(currentOrder.value.typeAsInt),
     style: TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.bold,
@@ -421,8 +421,8 @@ Widget _buildPriceText() {
   return Container(
     constraints: BoxConstraints(maxWidth: Get.width * 0.3),
     child: Text(
-      widget.order.payment == null ? '-' : 
-      currencyFormatter.format(widget.order.payment!.amount),
+      currentOrder.value.payment == null ? '-' : 
+      currencyFormatter.format(currentOrder.value.payment!.amount),
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
@@ -480,7 +480,7 @@ String _getOrderTypeName(dynamic type) {
               ? Padding(
                   padding: EdgeInsets.only(left: SizeConfig.safeBlockHorizontal * 8 / 3.6),
                   child: Text(
-                    widget.order.originAddress.isEmpty ? '-' : widget.order.originAddress,
+                    currentOrder.value.originAddress.isEmpty ? '-' : currentOrder.value.originAddress,
                     style: TextStyle(
                       fontSize: SizeConfig.safeBlockHorizontal * 11 / 3.6,
                       color: Colors.black,
@@ -490,7 +490,7 @@ String _getOrderTypeName(dynamic type) {
               : Padding(
                   padding: EdgeInsets.only(left: SizeConfig.safeBlockHorizontal * 8 / 3.6),
                   child: Text(
-                    widget.order.destinationAddress.isEmpty ? '-' : widget.order.destinationAddress,
+                    currentOrder.value.destinationAddress.isEmpty ? '-' : currentOrder.value.destinationAddress,
                     style: TextStyle(
                       fontSize: SizeConfig.safeBlockHorizontal * 11 / 3.6,
                       color: Colors.black,
@@ -535,21 +535,21 @@ String _getOrderTypeName(dynamic type) {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
-          image: widget.order.typeAsInt == 0 || widget.order.typeAsInt == "0"
+          image: currentOrder.value.typeAsInt == 0 || currentOrder.value.typeAsInt == "0"
               ? AssetImage('assets/icons/10-2021/ride.png')
-              : widget.order.typeAsInt == 1 || widget.order.typeAsInt == "1"
+              : currentOrder.value.typeAsInt == 1 || currentOrder.value.typeAsInt == "1"
                   ? AssetImage('assets/icons/10-2021/courier.png')
-                  : widget.order.typeAsInt == 2 || widget.order.typeAsInt == "2"
+                  : currentOrder.value.typeAsInt == 2 || currentOrder.value.typeAsInt == "2"
                       ? AssetImage('assets/icons/10-2021/shopping.png')
-                      : widget.order.typeAsInt == 3 || widget.order.typeAsInt == "3"
+                      : currentOrder.value.typeAsInt == 3 || currentOrder.value.typeAsInt == "3"
                           ? AssetImage('assets/icons/10-2021/food.png')
-                          : widget.order.typeAsInt == 4 || widget.order.typeAsInt == "4"
+                          : currentOrder.value.typeAsInt == 4 || currentOrder.value.typeAsInt == "4"
                               ? AssetImage('assets/icons/10-2021/car.png')
-                              : widget.order.typeAsInt == 100 || widget.order.typeAsInt == "100"
+                              : currentOrder.value.typeAsInt == 100 || currentOrder.value.typeAsInt == "100"
                                   ? AssetImage('assets/icons/10-2021/mart.png')
-                                  : widget.order.typeAsInt == 102 || widget.order.typeAsInt == "102"
+                                  : currentOrder.value.typeAsInt == 102 || currentOrder.value.typeAsInt == "102"
                                       ? AssetImage('assets/icons/10-2021/trike.png')
-                                      : widget.order.typeAsInt == 20 || widget.order.typeAsInt == "20"
+                                      : currentOrder.value.typeAsInt == 20 || currentOrder.value.typeAsInt == "20"
                                           ? AssetImage('assets/icons/10-2021/driver.png')
                                           : AssetImage('assets/icons/10-2021/trike_courier.png'),
         ),
@@ -586,7 +586,7 @@ String _getOrderTypeName(dynamic type) {
           child: ElevatedButton.icon(
             icon: Icon(Icons.phone, color: OkejekTheme.primary_color),
             label: Text('Call', style: TextStyle(color: OkejekTheme.primary_color)),
-            onPressed: () => launchUrlString('tel://${widget.order.driver?.phone ?? ''}'),
+            onPressed: () => launchUrlString('tel://${currentOrder.value.driver?.phone ?? ''}'),
             style: ElevatedButton.styleFrom(
               elevation: 2,
               backgroundColor: Colors.white,
@@ -602,7 +602,7 @@ String _getOrderTypeName(dynamic type) {
             label: Text('Chat', style: TextStyle(color: Colors.white)),
             onPressed: () {
               Get.to(() => ChatPage(
-                    orderId: widget.order.id.toString(),
+                    orderId: currentOrder.value.id.toString(),
                   ));
             },
             style: ElevatedButton.styleFrom(

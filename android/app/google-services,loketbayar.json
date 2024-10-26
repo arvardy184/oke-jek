@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "897476679268",
+    "project_id": "okejeck-developer",
+    "storage_bucket": "okejeck-developer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897476679268:android:0b3278c2d5c6f39674b171",
+        "android_client_info": {
+          "package_name": "id.okejack.merchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnphpye79cG8amEqXWl69rsAk6xiSCf2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897476679268:android:ec45147d20ddf4fc74b171",
+        "android_client_info": {
+          "package_name": "id.okejack.okedriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnphpye79cG8amEqXWl69rsAk6xiSCf2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897476679268:android:719130c7d10219aa74b171",
+        "android_client_info": {
+          "package_name": "id.okejack.okejackapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "897476679268-1ljeqoj6idk6rhtfo4ofirq53oa1s3t5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.okejack.okejackapp",
+            "certificate_hash": "d98beb5926ca876699498305892af2e5e72dc90c"
+          }
+        },
+        {
+          "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnphpye79cG8amEqXWl69rsAk6xiSCf2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897476679268-58jsb7ujjftmbdiuefke2grc4jc4h70k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

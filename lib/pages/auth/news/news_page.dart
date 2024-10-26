@@ -14,7 +14,6 @@ class NewsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Obx(() => newsLength)
     return Scaffold(
       body: SafeArea(
         child: Obx(() {
@@ -104,34 +103,48 @@ class NewsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: newsItem.jetpackFeaturedMediaUrl,
-                    fit: BoxFit.cover,
-                    progressIndicatorBuilder: (context, url, progress) {
-                      return Container(
-                        height: Get.height * 0.2,
-                        width: Get.width,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                    imageBuilder: (context, imageProvider) {
-                      return Container(
-                        height: Get.height * 0.2,
-                        width: Get.width,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                        ),
-                      );
-                    },
-                  ),
+                CachedNetworkImage(
+  imageUrl: newsItem.jetpackFeaturedMediaUrl,
+  fit: BoxFit.cover,
+  progressIndicatorBuilder: (context, url, progress) {
+    return Container(
+      height: Get.height * 0.2,
+      width: Get.width,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  },
+  errorWidget: (context, url, error) {
+    // Menangani error 404 atau error lain dengan widget pengganti
+    return Container(
+      height: Get.height * 0.2,
+      width: Get.width,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+      ),
+    );
+  },
+  imageBuilder: (context, imageProvider) {
+    return Container(
+      height: Get.height * 0.2,
+      width: Get.width,
+      decoration: BoxDecoration(
+        color: Colors.grey,
+        borderRadius: BorderRadius.circular(10),
+        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+      ),
+    );
+  },
+),
                   SizedBox(
                     height: Get.height * 0.02,
                   ),

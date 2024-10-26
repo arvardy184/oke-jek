@@ -26,6 +26,8 @@ import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../widgets/dialog2.dart';
+
 class OkeRideController extends GetxController {
   Set<Marker> _markers = {};
   final LandingController landingController = Get.find();
@@ -252,49 +254,25 @@ class OkeRideController extends GetxController {
                   ));
                 }
               } 
-              // else {
-              //   // String webUrl = responseBody['data']['payment_redirect_web_url'];
-              //   // if (await canLaunchUrlString(webUrl)) {
-              //   //   await launchUrlString(webUrl);
-
-              //     bool paymentCompleted = await Future.delayed(Duration(minutes: 5), () {
-              //       return checkPaymentStatus(order.id.toString());
-              //     });
-
-              //     if (!paymentCompleted) {
-              //       Get.snackbar('Pembayaran Belum Selesai', ' Silakan Coba Lagi atau pilih metode pembayaran lainnya');
-              //     } else {
-              //       Get.off(() => OrderDetailPage(
-              //             order: order,
-              //             driverData: order.driver != null ? order.driver!.toJson() : {},
-              //           ));
-              //     }
-              //   // } else {
-              //   //   throw 'Could not launch $webUrl';
-              //   // }
-              // }
+         
             }
           }
           var type = responseBody['data']['order']['type'];
           print("order type ${type.runtimeType}");
-          Get.off(OrderDetailPage(
+          Get.to(OrderDetailPage(
             order: order,
             driverData: order.driver != null ? order.driver!.toJson() : {},
           ));
-          //  Get.back();
-          // Get.to(DetailOrder)
-          // PersistentNavBarNavigator.pushNewScreen(context, screen: OrderDetailPage(order: order), withNavBar: false).then((value) {
-          //           historyController.resetController();
-          //           historyController.fetchHistory();
-          //         });
-          // changing tab view to history page
+        
           landingController.changeTab(1);
           historyController.resetController();
           historyController.fetchHistory();
           historyController.resetFilter();
         } else if (!responseBody['success']) {
           print("response body not success$responseBody");
+          // errorOrder(responseBody);
           errorOrder(responseBody);
+          handleError(errorMessage.value);
           // dialogError(Get.context, errorMessage.value);
           showAlertDialog(Get.context!, errorMessage.value);
         }
@@ -302,8 +280,19 @@ class OkeRideController extends GetxController {
     } on DioException catch (e) {
       print(e.message);
       isSubmitOrder.value = false;
+      handleError( e.message!);
     }
   }
+
+  void handleError(String message) {
+  showOkejekDialog(
+    title: 'Error',
+    message: message,
+    icon: Icons.error,
+    iconColor: Colors.red,
+  );
+  errorMessage.value = message;
+}
 
   Future<bool> checkPaymentStatus(String orderId) async {
     try {

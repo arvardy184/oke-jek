@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class InitController extends GetxController {
   var url = OkejekBaseURL.apiUrl('init');
   Dio dio = Dio();
+  final String currentVersion = '7.0.0';
+  final String minimumVersion = '6.3.1';
 
   void onInit() async {
     super.onInit();

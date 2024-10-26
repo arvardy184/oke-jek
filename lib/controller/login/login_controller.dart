@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
@@ -20,24 +21,26 @@ class LoginController extends GetxController {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController inputPhoneController = TextEditingController();
 
-
   var isLoginFailure = false.obs;
-   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: '647667063437-3q9k9q0q5q9r9h9q7k0q6r6k3s3v8f9.apps.googleusercontent.com',
+    scopes: ['email', 'profile'],
+  );
   var errorMessage = 'Pendaftaran akun gagal'.obs;
   String tokenId = '';
   Dio dio = Dio();
 
- RxBool isLoading = false.obs;
-  
-    Rx<User?> firebaseUser = Rx<User?>(null);
+  RxBool isLoading = false.obs;
+
+  Rx<User?> firebaseUser = Rx<User?>(null);
 
   void init() {
     super.onInit();
     initializeInterceptors();
   }
 
-   void _setupDioInterceptors() {
+  void _setupDioInterceptors() {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         SharedPreferences storage = Get.find<SharedPreferences>();
@@ -51,13 +54,12 @@ class LoginController extends GetxController {
       onError: (DioException e, handler) {
         debugPrint('API Error: ${e.message}');
         if (e.response?.statusCode == 401) {
-          Get.offAll(() =>  LandingPage());
+          Get.offAll(() => LandingPage());
         }
         return handler.next(e);
       },
     ));
   }
-
 
   void delete() {
     super.onDelete();
@@ -199,6 +201,8 @@ class LoginController extends GetxController {
       return;
     }
 
+    debugGoogleSignIn();
+
     isSigningIn = true; // Set the flag to true to indicate sign-in is in progress
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -227,6 +231,32 @@ class LoginController extends GetxController {
       print('An error occurred: $e');
     } finally {
       isSigningIn = false; // Reset the flag after the sign-in attempt finishes
+    }
+  }
+
+  Future<void> debugGoogleSignIn() async{
+    try{
+      print('DEBUGGING GOOGLE SIGN IN');
+
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final isAvailable = await GoogleSignIn().canAccessScopes(['email']);
+      print("Google sign in available: $isAvailable");
+
+      final currentUser = await googleSignIn.signInSilently();
+
+      print("Current user: $currentUser");
+
+      final clientId = await googleSignIn.clientId;
+
+      print("Client ID: $clientId");
+
+      final firebaseApp = Firebase.app();
+      print("Firebase App: $firebaseApp");
+      print("Firebase Options");
+
+
+    } catch (e){
+      print(" debug error $e");
     }
   }
 

@@ -46,6 +46,7 @@ class OkeCourierController extends GetxController {
   var dropDownValue = 'Cash'.obs;
   var dropDownValueList = ['Cash', 'OkePoint'];
   final RxBool isFetchingData = false.obs;
+  var errorMessage = 'Error Message'.obs;
 
   void addNote(String newNote) {
     note.value = newNote;
@@ -56,7 +57,7 @@ class OkeCourierController extends GetxController {
     promoCode.value = value;
   }
 
- @override
+  @override
   void onInit() {
     super.onInit();
     getCurrentUserAddress();
@@ -74,7 +75,6 @@ class OkeCourierController extends GetxController {
     }
   }
 
-
   void delete() {
     super.onDelete();
   }
@@ -84,9 +84,9 @@ class OkeCourierController extends GetxController {
     print('changed submit promo to ' + isSubmitPromo.value.toString());
   }
 
-  void cancelPromo(){
+  void cancelPromo() {
     promoCode.value = '';
-update();
+    update();
   }
 
   void resetController() {
@@ -109,13 +109,12 @@ update();
     ongkir.value = 0;
   }
 
-   Future<void> checkPrice() async {
+  Future<void> checkPrice() async {
     try {
       isLoading.value = true;
-      
+
       // Validasi koordinat
-      if (originLat.value == 0 || originLng.value == 0 || 
-          destinationLat.value == 0 || destinationLng.value == 0) {
+      if (originLat.value == 0 || originLng.value == 0 || destinationLat.value == 0 || destinationLng.value == 0) {
         throw Exception('Koordinat tidak valid');
       }
 
@@ -127,7 +126,7 @@ update();
       }
 
       String url = OkejekBaseURL.apiUrl('order/calculate');
-      
+
       final response = await dio.post(
         url,
         queryParameters: {
@@ -149,22 +148,17 @@ update();
       } else {
         throw Exception(response.data['message'] ?? 'Gagal mendapatkan ongkir');
       }
-
     } catch (e) {
       debugPrint('Error calculating price: $e');
-      throw e; // Re-throw 
+      throw e; // Re-throw
     } finally {
       isLoading.value = false;
     }
   }
 
-   bool canCalculatePrice() {
-    return originLat.value != 0 && 
-           originLng.value != 0 && 
-           destinationLat.value != 0 && 
-           destinationLng.value != 0;
+  bool canCalculatePrice() {
+    return originLat.value != 0 && originLng.value != 0 && destinationLat.value != 0 && destinationLng.value != 0;
   }
-
 
   void getCurrentUserAddress() async {
     isLoading.value = true;
@@ -294,20 +288,25 @@ update();
 
       var responseBody = response.data;
       if (responseBody['success'] == true) {
-
         var orderData = responseBody['data']['order'];
         print('Order data courier $orderData');
         Order order = Order.fromJson(orderData);
 
-        showOkejekDialog(title: 'Pesanan Berhasil', message: 'Pesanan anda berhasil dibuat', icon: Icons.check_circle,
-        iconColor: Colors.green,
-        actions: [
-          TextButton(onPressed: (){
-             Get.back();
-              Get.to(() => OrderDetailPage(order: order, driverData: order.driver != null ? order.driver!.toJson() : {}));
-          }, child: Text('Lihat Detail'))
-        ]);
-        
+        showOkejekDialog(
+            title: 'Pesanan Berhasil',
+            message: 'Pesanan anda berhasil dibuat',
+            icon: Icons.check_circle,
+            iconColor: Colors.green,
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Get.back();
+                    Get.to(() =>
+                        OrderDetailPage(order: order, driverData: order.driver != null ? order.driver!.toJson() : {}));
+                  },
+                  child: Text('Lihat Detail'))
+            ]);
+
         print(
           "Response dari orders/new: $responseBody",
         );
@@ -319,11 +318,12 @@ update();
           'data': responseBody['data'],
         };
       } else {
- isLoading.value = false;
-        showOkejekDialog(title: "Gagal membuat Pesanan", message: responseBody['message'], icon: Icons.error, iconColor: Colors.red);
+        isLoading.value = false;
+
+        // showOkejekDialog(title: "Gagal membuat Pesanan", message: responseBody['message'], icon: Icons.error, iconColor: Colors.red);
         print("Ada kesalahan dalam pembuatan order: $responseBody");
         // Ada kesalahan dalam pembuatan order
-       
+
         return {
           'success': false,
           'message': responseBody['message'] ?? 'Gagal membuat order',
@@ -331,14 +331,13 @@ update();
         };
       }
     } on DioException catch (e) {
-      
       isLoading.value = false;
       showOkejekDialog(
-      title: 'Error',
-      message: 'Terjadi kesalahan: ${e.message}',
-      icon: Icons.error,
-      iconColor: Colors.red,
-    );
+        title: 'Error',
+        message: 'Terjadi kesalahan: ${e.message}',
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
       print('Error ${e.response}');
       print('Error saat membuat order: ${e.message}');
       return {
@@ -348,7 +347,17 @@ update();
     }
   }
 
-   Future<bool> fetchDataPayment() async {
+  void handleError(String message) {
+    showOkejekDialog(
+      title: 'Error',
+      message: message,
+      icon: Icons.error,
+      iconColor: Colors.red,
+    );
+    errorMessage.value = message;
+  }
+
+  Future<bool> fetchDataPayment() async {
     try {
       isFetchingData.value = true;
       await checkPrice(); // Pastikan ini dijalankan
@@ -361,7 +370,7 @@ update();
     }
   }
 
-    Future<void> getCityId() async {
+  Future<void> getCityId() async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       String? cityJson = preferences.getString('nearestCity');
@@ -393,7 +402,7 @@ update();
     }
   }
 
-    void getCouponCode(String couponCode) async {
+  void getCouponCode(String couponCode) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString("user_session");
 
@@ -431,7 +440,7 @@ update();
         ongkir.value = 0;
       } else {
         setPromoCode(couponCode);
-      ongkir.value -= baseResponse.data.coupon!.discountFee! < 0 ? 0 : ongkir.value;
+        ongkir.value -= baseResponse.data.coupon!.discountFee! < 0 ? 0 : ongkir.value;
         // print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }

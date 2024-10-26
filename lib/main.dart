@@ -12,7 +12,6 @@ import 'package:okejek_flutter/pages/splash_screen.dart';
 import 'package:okejek_flutter/pages/status/payment_success_page.dart';
 
 
-
 void main() async {
   await _initializeApp();
   

@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:okejek_flutter/defaults/url.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
+import 'package:okejek_flutter/pages/landing_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -104,6 +105,11 @@ class UserController extends GetxController {
       var userData = jsonDecode(userJson);
       print("user : $userData");
       print('session : $session');
+
+      if(session == null) {
+        isSessionValid.value = false;
+        Get.off(() => LandingPage(), transition: Transition.fade);
+      }
 
       // user session checking
       id.value = userData['data']['user']['id'] ?? '';

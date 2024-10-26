@@ -26,6 +26,8 @@ import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../widgets/dialog2.dart';
+
 class OkeCarController extends GetxController {
   Set<Marker> _markers = {};
   final LandingController landingController = Get.find();
@@ -271,17 +273,29 @@ class OkeCarController extends GetxController {
         } else if (!responseBody['success']) {
           print("response body not success$responseBody");
           errorOrder(responseBody);
+          handleError(errorMessage.value);
           // dialogError(Get.context, errorMessage.value);
-          showAlertDialog(Get.context!, errorMessage.value);
+          // showAlertDialog(Get.context!, errorMessage.value);
         }
       }
     } on DioException catch (e) {
       print(e.message);
       isSubmitOrder.value = false;
+      handleError(e.message!);
     } finally {
       isLoading.value = false;
     }
   }
+
+  void handleError(String message) {
+  showOkejekDialog(
+    title: 'Error',
+    message: message,
+    icon: Icons.error,
+    iconColor: Colors.red,
+  );
+  errorMessage.value = message;
+}
 
    void cancelPromo(){
     couponCode.value = '';

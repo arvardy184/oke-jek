@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:okejek_flutter/defaults/url.dart';
+import 'package:okejek_flutter/pages/landing_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FCMController extends GetxController {
@@ -226,6 +227,10 @@ class FCMController extends GetxController {
     String? session = preferences.getString("user_session");
 
     print("session $session");
+    if(session == null) {
+      Get.off(() => LandingPage(), transition: Transition.fade);
+    }
+    
     try {
       var queryParams = {'api_token': session, 'token': token};
       var response = await dio.post(
