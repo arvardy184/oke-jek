@@ -1,0 +1,17 @@
+flutter_native_splash:
+  color: "#3c2782"
+  image: assets/images/ic_launcher.png
+  android: true
+  ios: true
+  branding_bottom_padding: 40
+  android_12:
+    image: assets/images/ic_launcher.png
+    icon_background_color: "#3c2782"
+  
+  # Tambahkan ini untuk mengontrol ukuran
+  android_gravity: fill
+  ios_content_mode: center
+  # fullscreen: true
+  
+  # Anda bisa menentukan ukuran logo (dalam persentase dari layar)
+  # image_size: 0.2 # 20% dari lebar layar
