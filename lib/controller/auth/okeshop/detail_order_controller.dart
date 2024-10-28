@@ -16,6 +16,7 @@ import 'package:okejek_flutter/models/auth/order_model.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/auth/bottom_navigation_bar.dart';
 import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailOrderShopController extends GetxController {
@@ -112,7 +113,8 @@ class DetailOrderShopController extends GetxController {
      try {
     isLoading.value = true;
     isSubmitOrder.value = true;
-
+PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
     print('is submit order ${isSubmitOrder.value}');
     String shoppingJSON = cartToJSON();
     print(shoppingJSON);
@@ -143,7 +145,7 @@ class DetailOrderShopController extends GetxController {
         'coupon_id': couponId.value,
         'shopping_items': shoppingJSON,
         'app_platform': 'android',
-        'app_version': '900410',
+        'app_version': appVersion,
         'item_detail': '',
         'sender_name': '',
         'sender_phone': '',

@@ -19,6 +19,7 @@ import 'package:okejek_flutter/models/auth/order_model.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/auth/bottom_navigation_bar.dart';
 import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OkefoodPaymentController extends GetxController {
@@ -184,7 +185,8 @@ class OkefoodPaymentController extends GetxController {
     print('is submit order ${isSubmitOrder.value}');
     String shoppingJSON = cartToJSON();
     print(shoppingJSON);
-
+PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
     // String url = OkejekBaseURL.createOrder;
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -212,7 +214,7 @@ class OkefoodPaymentController extends GetxController {
         'coupon_id': couponId.value,
         'shopping_items': shoppingJSON,
         'app_platform': 'android',
-        'app_version': '900410',
+        'app_version': appVersion,
       };
       
 

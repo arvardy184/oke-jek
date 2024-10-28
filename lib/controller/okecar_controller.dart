@@ -23,6 +23,7 @@ import 'package:okejek_flutter/models/auth/okeride/auto_complete_model.dart';
 import 'package:okejek_flutter/models/auth/order_model.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -162,6 +163,8 @@ class OkeCarController extends GetxController {
   Future<void> createOrder(Function(BuildContext, String) showAlertDialog) async {
     isSubmitOrder.value = true;
     isLoading.value = true;
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
 
     // String url = OkejekBaseURL.createOrder;
     String url = OkejekBaseURL.apiUrl('orders/new');
@@ -201,7 +204,7 @@ class OkeCarController extends GetxController {
         'coupon_id': '${couponId.value}',
         'shopping_items': '',
         'app_platform': 'android',
-        'app_version': '900410',
+        'app_version': appVersion,
       };
 
       print(

@@ -175,7 +175,7 @@ class OkeCourierController extends GetxController {
     }
 
     print('current lat lng (courier): ${originLat.value},${originLng.value}');
-    isLoading.value = false;c
+    isLoading.value = false;
   }
 
   Future<List<AutoCompletePlace>>? getCoordinatesfromPlace(String place) async {
@@ -229,7 +229,9 @@ class OkeCourierController extends GetxController {
   }) async {
     isLoading.value = true;
 
-    PackageInfo package
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
+    print("app version $appVersion");
 
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -263,7 +265,7 @@ class OkeCourierController extends GetxController {
         'coupon_id': couponId.value,
         'shopping_items': "",
         'app_platform': 'android',
-        'app_version': ,
+        'app_version': appVersion,
         'item_detail': itemDetail,
         'sender_name': senderName,
         'sender_phone': senderPhone,
