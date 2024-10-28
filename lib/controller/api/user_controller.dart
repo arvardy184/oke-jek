@@ -96,7 +96,7 @@ class UserController extends GetxController {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var userJson = preferences.getString('user_data');
       var session = preferences.getString('user_session');
-
+    
       if (userJson == null) {
         print("No user data found.");
         return;

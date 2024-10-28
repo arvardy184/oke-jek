@@ -72,44 +72,78 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     historyController.driverLocationTimer?.cancel();
     chatController.stopPolling();
 
-    // Get.back();
-  //  Get.defaultDialog(
-  //     title: 'Pesanan Dibatalkan',
-  //     titleStyle: TextStyle(fontWeight: FontWeight.bold),
-  //     content: Column(
-  //       children: [
-  //         Icon(
-  //           Icons.error_outline,
-  //           color: Colors.red,
-  //           size: 50,
-  //         ),
-  //         SizedBox(height: 16),
-  //         Text('Pesanan Anda telah dibatalkan.'),
-  //         SizedBox(height: 8),
-  //         Text('Apakah Anda ingin membuat pesanan baru?'),
-  //       ],
-  //     ),
-  //     actions: [
-  //       TextButton(
-  //         onPressed: () {
-  //           // Kembali ke halaman utama
-  //           Get.offAll(() => BottomNavigation());
-  //           landingController.changeTab(0); // Tab untuk menu order
-  //         }, 
-  //         child: Text(
-  //           'Tidak',
-  //           style: TextStyle(color: Colors.grey),
-  //         ),
-  //       ),
-  //       ElevatedButton(
-  //         onPressed: () => Get.back(),
-  //         style: ElevatedButton.styleFrom(
-  //           backgroundColor: OkejekTheme.primary_color,
-  //         ),
-  //         child: Text('Ya, Pesan Lagi'),
-  //       ),
-  //     ],
-  //   );
+ // Show dialog and handle navigation
+  Get.defaultDialog(
+    title: 'Pesanan Dibatalkan',
+    titleStyle: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.cancel_outlined,
+          color: Colors.red,
+          size: 50,
+        ),
+        SizedBox(height: 16),
+        Text(
+          'Pesanan Anda telah dibatalkan.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Apakah Anda ingin membuat pesanan baru?',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+        ),
+      ],
+    ),
+    radius: 10,
+    barrierDismissible: false, // Prevent dismissing by tapping outside
+    actions: [
+      TextButton(
+        onPressed: () {
+          Get.offAll(
+            () => BottomNavigation(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 300),
+          );
+          landingController.changeTab(1); // Go to history tab
+          historyController.fetchHistory(); // Refresh history
+        },
+        child: Text(
+          'Tidak',
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Get.offAll(
+            () => BottomNavigation(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 300),
+          );
+          landingController.changeTab(0); // Go to order tab
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: OkejekTheme.primary_color,
+          elevation: 0,
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          'Ya, Pesan Lagi',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    ],
+  );
+
   }
   void handleOrderCompletion() async {
     // Stop all ongoing processes
@@ -140,42 +174,44 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     _timer = null;
   }
 
-  Future<void> refreshOrderStatus() async {
-    try {
-      Order updatedOrder = await orderController.getOrderDetails(currentOrder.value.id);
-      if (updatedOrder.status != currentOrder.value.status) {
-        currentOrder.value = updatedOrder;
-        historyController.updateDriverLocation(updatedOrder);
-
-         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_getStatusUpdateMessage(updatedOrder.status)),
-              duration: const Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: const EdgeInsets.all(16),
-              backgroundColor: _getStatusColor(updatedOrder.status),
-            ),
-          );
-        }
-      
+Future<void> refreshOrderStatus() async {
+  if (!mounted) return;
   
-        setState(() {
-          print("refresh order statu1s ${updatedOrder.status}");
-          currentOrder.value = updatedOrder;
-          print("refresh order statu2s ${currentOrder.value.status}");
-        });
-        
-        historyController.updateDriverLocation(updatedOrder);
+  try {
+    Order updatedOrder = await orderController.getOrderDetails(currentOrder.value.id);
+    if (updatedOrder.status != currentOrder.value.status) {
+      currentOrder.value = updatedOrder;
+      historyController.updateDriverLocation(updatedOrder);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_getStatusUpdateMessage(updatedOrder.status)),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(16),
+            backgroundColor: _getStatusColor(updatedOrder.status),
+          ),
+        );
       }
-    
-    } catch (e) {
-      print('Error refreshing order status: $e');
+    }
+  } catch (e) {
+    print('Error refreshing order status: $e');
+    // Optionally show error message to user
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memperbarui status pesanan'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
+}
+
 
   @override
   void dispose() {

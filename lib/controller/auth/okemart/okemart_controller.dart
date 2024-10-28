@@ -74,7 +74,7 @@ class OkeMartController extends GetxController {
   Future<List<FoodVendor>> getMartVendor(String q) async {
     // String url = OkejekBaseURL.getFoodVendor;
     String url = OkejekBaseURL.apiUrl('vendors/lists');
-    // List<FoodVendor> foodVendors = [];
+    
 
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();

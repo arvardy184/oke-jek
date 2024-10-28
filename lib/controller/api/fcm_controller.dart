@@ -70,7 +70,7 @@ class FCMController extends GetxController {
   }
 
 
-  Future<void> _createNotificationChannel() async {
+ Future<void> _createNotificationChannel() async {
     if (GetPlatform.isAndroid) {
       try {
         final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -82,38 +82,59 @@ class FCMController extends GetxController {
           return;
         }
 
-        AndroidNotificationChannelGroup channelGroup = const AndroidNotificationChannelGroup(
-          'high_importance_channel_group',
-          'High Importance Notifications',
-          description: 'This channel group is used for important notifications.',
-          
-        ); 
-        await androidPlugin.createNotificationChannelGroup(channelGroup);
+        // Create Channel Groups
+        final List<AndroidNotificationChannelGroup> channelGroups = [
+          const AndroidNotificationChannelGroup(
+            'group_order',
+            'Order Notifications',
+            description: 'Notifications related to orders and deliveries',
+          ),
+          const AndroidNotificationChannelGroup(
+            'group_news',
+            'News Notifications',
+            description: 'Notifications about news and updates',
+          ),
+        ];
 
+        for (final group in channelGroups) {
+          await androidPlugin.createNotificationChannelGroup(group);
+          print("NOTIFICATION: Create android notification channel group: ${group.id}");
+        }
+
+        // Create Notification Channels
         const List<AndroidNotificationChannel> channels = [
           AndroidNotificationChannel(
-            'high_importance_channel',
-            'High Importance Notifications',
-            description: 'This channel is used for important notifications.',
-            importance: Importance.max,
+            'order',
+            'Order Updates',
+            description: 'Notifications about your orders and deliveries',
+            importance: Importance.high,
+            groupId: 'group_order',
           ),
           AndroidNotificationChannel(
-            'medium_importance_channel',
-            'Medium Importance Notifications',
-            description: 'This channel is used for medium priority notifications.',
+            'chat',
+            'Chat Messages',
+            description: 'Messages from drivers and customer service',
+            importance: Importance.high,
+            groupId: 'group_order',
+          ),
+          AndroidNotificationChannel(
+            'news',
+            'News Updates',
+            description: 'Latest news and promotions',
             importance: Importance.defaultImportance,
+            groupId: 'group_news',
           ),
           AndroidNotificationChannel(
-            'low_importance_channel',
-            'Low Importance Notifications',
-            description: 'This channel is used for low priority notifications.',
+            'etc',
+            'Other Notifications',
+            description: 'Other general notifications',
             importance: Importance.low,
           ),
         ];
 
         for (final channel in channels) {
           await androidPlugin.createNotificationChannel(channel);
-          print("Created notification channel: ${channel.id}");
+          print("NOTIFICATION: Create android notification channel: ${channel.id}");
         }
 
         print("All notification channels created successfully");
@@ -126,13 +147,19 @@ class FCMController extends GetxController {
   }
 
   Future<void> _showNotification(RemoteNotification notification, AndroidNotification? android) async {
-    String channelId = 'medium_importance_channel'; // Default channel
+    // Determine appropriate channel based on notification type
+    String channelId = 'etc'; // Default channel
 
-    // Determine the appropriate channel based on the notification content or type
-    if (notification.title?.toLowerCase().contains('urgent') == true) {
-      channelId = 'high_importance_channel';
-    } else if (notification.title?.toLowerCase().contains('info') == true) {
-      channelId = 'low_importance_channel';
+    // Logic to determine channel based on notification content or type
+    if (notification.title?.toLowerCase().contains('order') == true || 
+        notification.body?.toLowerCase().contains('order') == true) {
+      channelId = 'order';
+    } else if (notification.title?.toLowerCase().contains('chat') == true || 
+               notification.body?.toLowerCase().contains('chat') == true) {
+      channelId = 'chat';
+    } else if (notification.title?.toLowerCase().contains('news') == true || 
+               notification.body?.toLowerCase().contains('news') == true) {
+      channelId = 'news';
     }
 
     print("Showing notification on channel: $channelId");
@@ -144,18 +171,34 @@ class FCMController extends GetxController {
       NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,
-          channelId.replaceAll('_', ' ').capitalize!,
+          channelId.capitalize!,
           channelDescription: 'This channel is used for notifications.',
-          importance: Importance.max,
-          priority: Priority.high,
+          importance: channelId == 'order' || channelId == 'chat' 
+              ? Importance.high 
+              : Importance.defaultImportance,
+          priority: channelId == 'order' || channelId == 'chat'
+              ? Priority.high
+              : Priority.defaultPriority,
           icon: android?.smallIcon ?? '@mipmap/ic_launcher',
         ),
       ),
     );
   }
+
   Future<void> _showDataNotification(Map<String, dynamic> data) async {
     String title = data['msg_title'] ?? 'New Message';
     String body = data['msg_body'] ?? 'You have a new message';
+    String type = data['type'] ?? 'etc';
+
+    // Determine channel based on notification type
+    String channelId = 'etc';
+    if (type == 'order_update') {
+      channelId = 'order';
+    } else if (type == 'chat_message') {
+      channelId = 'chat';
+    } else if (type == 'news') {
+      channelId = 'news';
+    }
 
     await _localNotificationsPlugin.show(
       0,
@@ -163,17 +206,21 @@ class FCMController extends GetxController {
       body,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          'high_importance_channel',
-          'High Importance Notifications',
-          channelDescription: 'This channel is used for important notifications.',
-          importance: Importance.max,
-          priority: Priority.high,
+          channelId,
+          channelId.capitalize!,
+          channelDescription: 'This channel is used for notifications.',
+          importance: channelId == 'order' || channelId == 'chat' 
+              ? Importance.high 
+              : Importance.defaultImportance,
+          priority: channelId == 'order' || channelId == 'chat'
+              ? Priority.high
+              : Priority.defaultPriority,
           icon: '@mipmap/ic_launcher',
         ),
       ),
     );
 
-    print("Showing data notification: Title - $title, Body - $body");
+    print("Showing data notification: Title - $title, Body - $body, Channel - $channelId");
   }
 
   void _handleMessage(RemoteMessage message) {

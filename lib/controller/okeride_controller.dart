@@ -161,7 +161,8 @@ class OkeRideController extends GetxController {
 
 PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String appVersion = packageInfo.buildNumber;
-    // String url = OkejekBaseURL.createOrder;
+    print("kode app version $appVersion");
+   
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString("user_session");
@@ -198,7 +199,7 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
         'info': '',
         'coupon_id': couponId.value,
         'shopping_items': '',
-         'app_platform': 'android',
+        'app_platform': 'android',
         'app_version': appVersion,
       };
 

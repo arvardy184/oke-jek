@@ -124,7 +124,7 @@ class MainMenu extends StatelessWidget {
                 );
               }),
            
-            menuItem('Oke Rental', Image.asset('assets/icons/10-2021/car.png'), () {
+            menuItem('Oke Rental', Image.asset('assets/icons/10-2021/rent.png'), () {
               PersistentNavBarNavigator.pushNewScreen(
                 context,
                 withNavBar: false,

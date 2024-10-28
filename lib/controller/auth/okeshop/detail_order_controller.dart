@@ -128,7 +128,8 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
     print('is submit order ${isSubmitOrder.value}');
     String shoppingJSON = cartToJSON();
     print(shoppingJSON);
-
+    print("berapa appversion ${appVersion}");
+    print("berapa coupon id ${couponId.value}");
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString("user_session");

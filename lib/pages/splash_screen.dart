@@ -20,7 +20,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     super.initState();
     initController = Get.put(InitController());
     
-    // Inisialisasi animasi
+    // // Inisialisasi animasi
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -36,7 +36,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
   @override
   void dispose() {
-    _animationController.dispose();
+     _animationController.dispose();
     super.dispose();
   }
 

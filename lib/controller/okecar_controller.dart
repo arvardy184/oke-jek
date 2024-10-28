@@ -165,7 +165,11 @@ class OkeCarController extends GetxController {
     isLoading.value = true;
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String appVersion = packageInfo.buildNumber;
-
+    String versionName = packageInfo.version;
+  print("berapa appVersion ${appVersion}");
+  print(
+    "berapa version name $versionName"
+  );
     // String url = OkejekBaseURL.createOrder;
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();

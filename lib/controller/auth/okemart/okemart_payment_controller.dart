@@ -185,8 +185,10 @@ class OkefoodPaymentController extends GetxController {
     print('is submit order ${isSubmitOrder.value}');
     String shoppingJSON = cartToJSON();
     print(shoppingJSON);
+    print("coupon id ${couponId.value}");
 PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String appVersion = packageInfo.buildNumber;
+    print("berapa app version ${appVersion}");
     // String url = OkejekBaseURL.createOrder;
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();

@@ -446,7 +446,7 @@ Future<void> createRentalOrder() async {
       'origin_address_detail': originLocationDetail.value,
       'destination_address': destLocation.value,
       'destination_address_detail': destLocationDetail.value,
-      'item_amount': 0,
+      'item_amount': selectedPackage.value!.price.toString(),
       'sender_name': '',
       'sender_phone': '',
       'recipient_name': '',

@@ -50,6 +50,7 @@ class OkeCourierController extends GetxController {
   final RxBool isFetchingData = false.obs;
   var errorMessage = 'Error Message'.obs;
   var couponId = 0.obs;
+  var price = 0.obs;
 
   void addNote(String newNote) {
     note.value = newNote;
@@ -111,6 +112,8 @@ class OkeCourierController extends GetxController {
     isOriginPickingFromMap.value = false;
     isDestionationPickingFromMap.value = false;
     ongkir.value = 0;
+    price.value = 0;
+    promoCode.value = '';
   }
 
   Future<void> checkPrice() async {
@@ -148,6 +151,7 @@ class OkeCourierController extends GetxController {
 
       if (response.data['success'] == true) {
         ongkir.value = response.data['data']['calculated_request']['fee'];
+        price.value = response.data['data']['calculated_request']['fee'];
         debugPrint("Ongkir updated: ${ongkir.value}");
       } else {
         throw Exception(response.data['message'] ?? 'Gagal mendapatkan ongkir');
@@ -445,11 +449,15 @@ class OkeCourierController extends GetxController {
       if (baseResponse.data.coupon!.id == 0) {
         Fluttertoast.showToast(msg: 'Kode tidak ditemukan', fontSize: 12);
         setPromoCode('');
-        ongkir.value = 0;
+
       } else {
         setPromoCode(couponCode);
-        ongkir.value -= baseResponse.data.coupon!.discountFee! < 0 ? 0 : ongkir.value;
-         couponId.value = baseResponse.data.coupon!.id!;
+        
+        ongkir.value = ongkir.value - baseResponse.data.coupon!.discountFee!;
+
+        
+        // ongkir.value -= baseResponse.data.coupon!.discountFee! < 0 ? 0 : ongkir.value;
+        couponId.value = baseResponse.data.coupon!.id!;
         // print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }

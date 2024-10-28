@@ -21,7 +21,7 @@ void main() async {
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
    await Firebase.initializeApp(
-    
+
    );
   await _configureSystemUI();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -85,7 +85,7 @@ class OkejekApp extends StatelessWidget {
           .copyWith(surface: OkejekTheme.bg_color),
     );
   }
-  
+ 
   TextTheme get _textTheme => TextTheme(
     labelLarge: TextStyle(fontFamily: OkejekTheme.font_family, fontSize: OkejekTheme.font_size),
     displayLarge: TextStyle(fontFamily: OkejekTheme.font_family),

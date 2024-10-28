@@ -221,7 +221,6 @@ class OkeFoodController extends GetxController {
         'api_token': session,
         'page':currentPage.value.toString(),
         'q': q,
-        
       };
         
       print("params di okefood controller $queryParams");

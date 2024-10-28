@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -26,15 +25,13 @@ class OkeCourierPaymentButton extends StatelessWidget {
     required this.detailBarang,
     required this.beratBarang,
     required this.biayaBarang,
-  }): super(key: key);
-
+  }) : super(key: key);
 
   final OkeRideController okeRideController = Get.put(OkeRideController());
   final OkeCourierController okeCourierController = Get.find();
   final currencyFormatter = NumberFormat.currency(locale: 'ID', symbol: 'Rp', decimalDigits: 0);
   @override
   Widget build(BuildContext context) {
-     
     return Column(
       children: [
         SizedBox(height: SizeConfig.safeBlockVertical * 20 / 7.2),
@@ -45,13 +42,40 @@ class OkeCourierPaymentButton extends StatelessWidget {
               'Ongkir : ',
               style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 3.3),
             ),
-            Text(
-              currencyFormatter.format(okeCourierController.ongkir.value),
-              style: TextStyle(
-                fontSize: SizeConfig.safeBlockHorizontal * 3.89,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Obx(() {
+              print("Building widget with ongkir: ${okeCourierController.ongkir.value}");
+              final ongkir = okeCourierController.ongkir.value;
+              final price = okeCourierController.price.value;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (okeCourierController.promoCode.value.isNotEmpty)
+                    Text(
+                      currencyFormatter.format(price),
+                      style: TextStyle(
+                        fontSize: SizeConfig.safeBlockHorizontal * 3,
+                        decoration: TextDecoration.lineThrough,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  Text(
+                    currencyFormatter.format(ongkir),
+                    style: TextStyle(
+                      fontSize: SizeConfig.safeBlockHorizontal * 3.8,
+                      fontWeight: FontWeight.bold,
+                      color: OkejekTheme.primary_color,
+                    ),
+                  ),
+                ],
+              );
+            })
+            // Obx(() => Text(
+            //       currencyFormatter.format(okeCourierController.ongkir.value),
+            //       style: TextStyle(
+            //         fontSize: SizeConfig.safeBlockHorizontal * 3.89,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     )),
           ],
         ),
         SizedBox(
@@ -91,12 +115,12 @@ class OkeCourierPaymentButton extends StatelessWidget {
                         fontSize: SizeConfig.safeBlockHorizontal * 3.3,
                       ),
                       value: okeRideController.dropDownValue.value,
-                       items: okeRideController.dropDownValueList.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+                      items: okeRideController.dropDownValueList.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                       onChanged: (value) {
                         okeRideController.setDropdownValue(value);
                       },
@@ -114,15 +138,14 @@ class OkeCourierPaymentButton extends StatelessWidget {
           () => FutureBuilder<bool>(
             future: okeRideController.queryAppsinstalled(),
             builder: (context, snapshot) {
-              if(snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
-              } else if(snapshot.hasError) {
+              } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
                 bool isInstalled = snapshot.data ?? false;
                 return isInstalled ? SizedBox() : _buildWarning();
               }
-         
             },
           ),
         ),
@@ -163,11 +186,20 @@ class OkeCourierPaymentButton extends StatelessWidget {
             print(okeCourierController.destinationLat);
             print(okeCourierController.destinationLng);
             print(okeCourierController.destinationLocation);
-            print("berapa oke courier ${namaPenerima} ${noHPPenerima} ${namaPengirim} ${noHPPengirim} ${detailBarang} ${beratBarang} ${biayaBarang}");
-            okeCourierController.createOrder(senderName: namaPengirim, senderPhone: noHPPengirim, recipientName: namaPenerima, recipientPhone: noHPPenerima, itemDetail: detailBarang,weight: beratBarang, itemAmount: biayaBarang);
+            print(
+                "berapa oke courier ${namaPenerima} ${noHPPenerima} ${namaPengirim} ${noHPPengirim} ${detailBarang} ${beratBarang} ${biayaBarang}");
+            okeCourierController.createOrder(
+                senderName: namaPengirim,
+                senderPhone: noHPPengirim,
+                recipientName: namaPenerima,
+                recipientPhone: noHPPenerima,
+                itemDetail: detailBarang,
+                weight: beratBarang,
+                itemAmount: biayaBarang);
           },
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(double.infinity, SizeConfig.safeBlockVertical * 5.2), backgroundColor: OkejekTheme.primary_color,
+            minimumSize: Size(double.infinity, SizeConfig.safeBlockVertical * 5.2),
+            backgroundColor: OkejekTheme.primary_color,
           ),
           child: Text(
             'Pesan Sekarang',
@@ -182,28 +214,29 @@ class OkeCourierPaymentButton extends StatelessWidget {
     );
   }
 
-  Widget _buildWarning(){
+  Widget _buildWarning() {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: OkejekTheme.primary_color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(children: [
-        Icon(Icons.warning,size: 20, color: OkejekTheme.primary_color),
-        SizedBox(width: 8),
-        Expanded(child: 
-        Text(
-          "Aplikasi ${okeRideController.dropDownValue.value} belum terinstall",
-          style: TextStyle(
-            color: OkejekTheme.primary_color,
-          )
-        ))
-      ],),
+      child: Row(
+        children: [
+          Icon(Icons.warning, size: 20, color: OkejekTheme.primary_color),
+          SizedBox(width: 8),
+          Expanded(
+              child: Text("Aplikasi ${okeRideController.dropDownValue.value} belum terinstall",
+                  style: TextStyle(
+                    color: OkejekTheme.primary_color,
+                  )))
+        ],
+      ),
     );
   }
-    Future<dynamic> dialog(OkeCourierController okeCourierController, BuildContext context) {
-      TextEditingController promoController = TextEditingController();
+
+  Future<dynamic> dialog(OkeCourierController okeCourierController, BuildContext context) {
+    TextEditingController promoController = TextEditingController();
     return Get.dialog(
       AlertDialog(
         title: Text(
@@ -268,7 +301,7 @@ class OkeCourierPaymentButton extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                           okeCourierController.changeSubmitPromo(true);
+                            okeCourierController.changeSubmitPromo(true);
                             Future.delayed(Duration(seconds: 3), () {
                               okeCourierController.changeSubmitPromo(false);
                               okeCourierController.setPromoCode(promoController.text);
@@ -291,7 +324,7 @@ class OkeCourierPaymentButton extends StatelessWidget {
       ),
     );
   }
-  
+
   // showSnackbar(BuildContext context) {
   //   ScaffoldMessenger.of(Get.context!).showSnackBar(
   //     SnackBar(
