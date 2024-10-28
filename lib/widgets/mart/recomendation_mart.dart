@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'package:get/get.dart';
 import 'package:okejek_flutter/controller/auth/okemart/okemart_controller.dart';
 import 'package:okejek_flutter/controller/auth/store/store_controller.dart';

@@ -75,7 +75,8 @@ class OkeMartController extends GetxController {
     // String url = OkejekBaseURL.getFoodVendor;
     String url = OkejekBaseURL.apiUrl('vendors/lists');
     
-
+foodVendors.clear();
+      print("data mart dibersihkan");
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       String? session = preferences.getString("user_session");
@@ -108,8 +109,10 @@ class OkeMartController extends GetxController {
       var responseBody = response.data;
 
       BaseResponse responseData = BaseResponse.fromJson(responseBody);
+      
 
       foodVendors.addAll(responseData.data.foodVendor!);
+      print("data mart ditambahkan");
       print("cek data di okemart controller ${foodVendors}");
       print('Fetched ${foodVendors.length} vendors');
       isLoading.value = false;

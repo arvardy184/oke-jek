@@ -326,7 +326,7 @@ class OkefoodPaymentController extends GetxController {
 
       var queryParams = {
         'code': '$couponCode',
-        'service': 1,
+        'service': 3,
         'city_id': '${cityId.value}',
         'api_token': session,
       };

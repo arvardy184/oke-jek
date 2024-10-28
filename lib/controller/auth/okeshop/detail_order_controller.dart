@@ -156,7 +156,7 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
         'coupon_id': couponId.value,
         'shopping_items': shoppingJSON,
         'app_platform': 'android',
-        'app_version': appVersion,
+        'app_version': appVersion == '800000',
         'item_detail': '',
         'sender_name': '',
         'sender_phone': '',

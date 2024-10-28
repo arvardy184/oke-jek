@@ -46,9 +46,8 @@ class HomePage extends StatelessWidget {
 
       await Future.wait([
       userController.checkingUserSession(),
-      okefoodController.getFoodVendor(),
+      okefoodController.nearestFoodVendor(),
       adsController.getAdsBanner('front'),
-      
     fcmController.refreshAndRegisterToken(),
     ]);
      servicesController.getService();
@@ -258,6 +257,123 @@ class HomePage extends StatelessWidget {
                                     SizedBox(
                                       height: Get.height * 0.01,
                                     ),
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      'Outlet Terdekat',
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    SizedBox(height: 10),
+    FutureBuilder(
+      future: okefoodController.nearestFoodVendor(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        
+        if (okefoodController.foodVendors.isEmpty) {
+          return Center(
+            child: Text('Tidak ada outlet terdekat'),
+          );
+        }
+
+        return Container(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: okefoodController.foodVendors.length,
+            itemBuilder: (context, index) {
+              final vendor = okefoodController.foodVendors[index];
+              return Container(
+                width: 160,
+                margin: EdgeInsets.only(right: 12),
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Get.to(() => DetailOutletPage(
+                        foodVendor: vendor,
+                        type: vendor.type == 'food' ? 3 : 100,
+                      ));
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(12),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: vendor.imageUrl,
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[200],
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[200],
+                              child: Icon(Icons.broken_image_rounded),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vendor.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                vendor.categories.isNotEmpty 
+                                  ? vendor.categories.first.name!
+                                  : 'Tidak ada kategori',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    ),
+  ],
+),
+SizedBox(height: Get.height * 0.02),
+
+// Lanjutkan dengan Divider dll
+Divider(),
                   
                                     // Ads Carousel
                                     FutureBuilder<List<Ads>>(

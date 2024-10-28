@@ -106,7 +106,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     actions: [
       TextButton(
         onPressed: () {
-          Get.offAll(
+          Get.to(
             () => BottomNavigation(),
             transition: Transition.fadeIn,
             duration: const Duration(milliseconds: 300),
@@ -121,7 +121,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       ElevatedButton(
         onPressed: () {
-          Get.offAll(
+          Get.to(
             () => BottomNavigation(),
             transition: Transition.fadeIn,
             duration: const Duration(milliseconds: 300),

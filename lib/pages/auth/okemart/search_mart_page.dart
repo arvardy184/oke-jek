@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:okejek_flutter/controller/auth/okemart/okemart_controller.dart';
@@ -14,26 +16,29 @@ class SearchFoodPage extends StatefulWidget {
 class _SearchFoodPageState extends State<SearchFoodPage> {
   final OkeMartController okeFoodController = Get.put(OkeMartController());
   final TextEditingController searchController = TextEditingController();
-
-  @override
+Timer? _debounce;
+ @override
   void initState() {
     super.initState();
     searchController.text = "";
-     ever(okeFoodController.foodVendors, (_) {
-    print("Food vendors changed: ${okeFoodController.foodVendors.length}");
-  });
-  ever(okeFoodController.isLoading, (_) {
-    print("Loading state changed: ${okeFoodController.isLoading.value}");
-  });
     performSearch();
-
   }
 
-  void performSearch() {
-    okeFoodController.resetPagination();
-    okeFoodController.getMartVendor(searchController.text);
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
+ void performSearch() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (okeFoodController.isLoading.value) return;
+      okeFoodController.resetPagination();
+      okeFoodController.getMartVendor(searchController.text);
+    });
+ }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,21 +51,21 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Cari toko...',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: performSearch,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                filled: true,
-                fillColor: Colors.grey[200],
-              ),
-              onSubmitted: (_) => performSearch(),
-            ),
+  controller: searchController,
+  decoration: InputDecoration(
+    hintText: 'Cari toko...',
+    suffixIcon: IconButton(
+      icon: Icon(Icons.search),
+      onPressed: performSearch,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+    ),
+    filled: true,
+    fillColor: Colors.grey[200],
+  ),
+  onChanged: (_) => performSearch(),
+)
           ),
           Expanded(
             child: Obx(() {

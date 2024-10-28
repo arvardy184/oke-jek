@@ -200,6 +200,51 @@ class OkeFoodController extends GetxController {
     }
   }
 
+  
+Future<List<FoodVendor>> nearestFoodVendor() async {
+    isLoading.value = true;
+    String url = OkejekBaseURL.apiUrl('vendors/lists');
+
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? session = preferences.getString("user_session");
+      double? currentLat = preferences.getDouble('current_geocode_lat');
+      double? currentLng = preferences.getDouble('current_geocode_lng');
+
+      var queryParams = {
+        'location': '$currentLat,$currentLng',
+        'outlet_type': 'food',
+        'api_token': session,
+      };
+        
+      print("params di okefood controller $queryParams");
+
+      var response = await dio.get(
+        url,
+        queryParameters: queryParams,
+        options: Options(
+          headers: {
+            'Accepts': 'application/json',
+          },
+        ),
+      );
+
+      debugPrint("res di okefood controller vendor/lists $response");
+
+      var responseBody = response.data;
+      BaseResponse responseData = BaseResponse.fromJson(responseBody);
+      List<FoodVendor> newVendors = responseData.data.foodVendor ?? [];
+      foodVendors.assignAll(newVendors);
+      return foodVendors;
+
+    } on DioException catch (e) {
+      print("Error fetching vendors: $e");
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+}
+
 
   Future<void> searchFoodVendor(String q) async {
 
