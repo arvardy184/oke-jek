@@ -13,6 +13,8 @@ import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
 import 'package:okejek_flutter/widgets/dialog2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 
 class OkeCourierController extends GetxController {
   Dio dio = Dio();
@@ -47,6 +49,7 @@ class OkeCourierController extends GetxController {
   var dropDownValueList = ['Cash', 'OkePoint'];
   final RxBool isFetchingData = false.obs;
   var errorMessage = 'Error Message'.obs;
+  var couponId = 0.obs;
 
   void addNote(String newNote) {
     note.value = newNote;
@@ -172,7 +175,7 @@ class OkeCourierController extends GetxController {
     }
 
     print('current lat lng (courier): ${originLat.value},${originLng.value}');
-    isLoading.value = false;
+    isLoading.value = false;c
   }
 
   Future<List<AutoCompletePlace>>? getCoordinatesfromPlace(String place) async {
@@ -226,6 +229,8 @@ class OkeCourierController extends GetxController {
   }) async {
     isLoading.value = true;
 
+    PackageInfo package
+
     String url = OkejekBaseURL.apiUrl('orders/new');
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString("user_session");
@@ -255,10 +260,10 @@ class OkeCourierController extends GetxController {
         'destination_address_detail': destinationDetailLocation.value,
         'food_vendor_id': 0,
         'info': note.value,
-        'coupon_id': 0,
+        'coupon_id': couponId.value,
         'shopping_items': "",
         'app_platform': 'android',
-        'app_version': '900410',
+        'app_version': ,
         'item_detail': itemDetail,
         'sender_name': senderName,
         'sender_phone': senderPhone,
@@ -441,6 +446,7 @@ class OkeCourierController extends GetxController {
       } else {
         setPromoCode(couponCode);
         ongkir.value -= baseResponse.data.coupon!.discountFee! < 0 ? 0 : ongkir.value;
+         couponId.value = baseResponse.data.coupon!.id!;
         // print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }

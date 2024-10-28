@@ -190,6 +190,7 @@ class OrderDetail extends StatelessWidget {
   }
 
   Widget _buildOrderSummary() {
+    print("data diskon ${order.discount}");
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

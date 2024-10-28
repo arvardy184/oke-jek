@@ -171,7 +171,7 @@ Widget outofService() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Menu Utama',
+          'Layanan kami', // Mengubah 'Menu Utama' menjadi 'Layanan kami' agar konsisten
           style: Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
                 color: Colors.black87,
                 fontWeight: FontWeight.bold,
@@ -181,21 +181,26 @@ Widget outofService() {
         SizedBox(
           height: Get.height * 0.02,
         ),
-        GridView.count(
-          physics: BouncingScrollPhysics(),
-          shrinkWrap: true,
-          crossAxisCount: 4,
-          mainAxisSpacing: SizeConfig.blockSizeVertical * 3,
-          children: <Widget>[
-            outOfServiceMenuItem('Oke Ride', Image.asset('assets/icons/10-2021/ride.png')),
-            outOfServiceMenuItem('Oke Food', Image.asset('assets/icons/10-2021/food.png')),
-            outOfServiceMenuItem('Belanja', Image.asset('assets/icons/10-2021/shopping.png')),
-            outOfServiceMenuItem('Kurir', Image.asset('assets/icons/10-2021/courier.png')),
-            outOfServiceMenuItem('Express', Image.asset('assets/icons/10-2021/courier.png')),
-            outOfServiceMenuItem('Oke Mart', Image.asset('assets/icons/10-2021/mart.png')),
-            outOfServiceMenuItem('Bentor', Image.asset('assets/icons/10-2021/trike_courier.png')),
-            outOfServiceMenuItem('Jadi Mitra', Image.asset('assets/icons/10-2021/driver.png')),
-          ],
+        Container(
+          width: Get.width,
+          height: Get.height * 0.27, // Menyesuaikan tinggi dengan availableService
+          child: GridView.count(
+            physics: BouncingScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: 4,
+            mainAxisSpacing: SizeConfig.blockSizeVertical * 3,
+            children: <Widget>[
+              outOfServiceMenuItem('Oke Ride', Image.asset('assets/icons/10-2021/ride.png')),
+              outOfServiceMenuItem('Oke Car', Image.asset('assets/icons/10-2021/car.png')),
+              outOfServiceMenuItem('Oke Food', Image.asset('assets/icons/10-2021/food.png')),
+              outOfServiceMenuItem('Belanja', Image.asset('assets/icons/10-2021/shopping.png')),
+              outOfServiceMenuItem('Kurir', Image.asset('assets/icons/10-2021/courier.png')),
+              outOfServiceMenuItem('Oke Mart', Image.asset('assets/icons/10-2021/mart.png')),
+              outOfServiceMenuItem('Oke Rental', Image.asset('assets/icons/10-2021/car.png')),
+              outOfServiceMenuItem('Bentor', Image.asset('assets/icons/10-2021/trike_courier.png')),
+              outOfServiceMenuItem('Jadi Mitra', Image.asset('assets/icons/10-2021/driver.png')),
+            ],
+          ),
         ),
       ],
     ),
@@ -220,11 +225,10 @@ Widget outOfServiceMenuItem(String menuLabel, Image image) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                flex: 3,
+                flex: 2, // Menyesuaikan flex dengan menuItem
                 child: Container(
-                  margin: EdgeInsets.all(10),
-                  height: SizeConfig.safeBlockHorizontal * 45,
-                  width: SizeConfig.blockSizeVertical * 45,
+                  height: 500, // Menyesuaikan dengan menuItem
+                  width: 500,  // Menyesuaikan dengan menuItem
                   child: image,
                 ),
               ),
@@ -234,7 +238,7 @@ Widget outOfServiceMenuItem(String menuLabel, Image image) {
                   menuLabel,
                   style: TextStyle(
                     color: Colors.black87,
-                    fontSize: SizeConfig.safeBlockHorizontal * 2.8,
+                    fontSize: SizeConfig.safeBlockHorizontal * 3.2, // Menyesuaikan dengan menuItem
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),

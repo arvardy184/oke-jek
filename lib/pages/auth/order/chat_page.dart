@@ -34,7 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     controller.fetchMessages(widget.orderId);
-
+    print("di chat page ${controller.driver}");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: OkejekTheme.primary_color,

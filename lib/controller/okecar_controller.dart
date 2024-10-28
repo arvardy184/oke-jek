@@ -80,6 +80,7 @@ class OkeCarController extends GetxController {
   var currentService = 'Mobil'.obs;
 
   var isAppInstalled = true.obs;
+  var couponId = 0.obs;
 
   Set<Marker> setMarker() {
     driverLocation.forEach(
@@ -197,8 +198,10 @@ class OkeCarController extends GetxController {
         'type': '${orderType.value}',
         'food_vendor_id': '',
         'info': '',
-        'coupon_id': '',
+        'coupon_id': '${couponId.value}',
         'shopping_items': '',
+        'app_platform': 'android',
+        'app_version': '900410',
       };
 
       print(
@@ -597,7 +600,7 @@ class OkeCarController extends GetxController {
     var queryParams = {
       'origin': '${originLat.value},${originLng.value}',
       'destination': '${destinationLat.value},${destinationLng.value}',
-      'type': 0,
+      'type': 4,
       'api_token': session,
     };
 
@@ -731,6 +734,7 @@ class OkeCarController extends GetxController {
       } else {
         setPromoCode(couponCode);
         price.value = originPrice.value - baseResponse.data.coupon!.discountFee!;
+        couponId.value = baseResponse.data.coupon!.id!;
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }
     } on DioException catch (e) {

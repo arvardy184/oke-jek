@@ -146,6 +146,7 @@ class LoginController extends GetxController {
           "name": googleUser.displayName ?? '',
           "email": googleUser.email,
           "phone": inputPhoneController.text,
+          "photo": googleUser.photoUrl ?? '',
           "token_id": tokenIdParams,
         },
         options: Options(headers: {'Accepts': 'application/json'}),
@@ -300,71 +301,71 @@ class LoginController extends GetxController {
     );
   }
 
-  loginGoogleAccount(GoogleSignInAccount googleUser, String tokenIdParams) async {
-    isLoading.value = true;
+  // loginGoogleAccount(GoogleSignInAccount googleUser, String tokenIdParams) async {
+  //   isLoading.value = true;
 
-    String url = OkejekBaseURL.apiUrl('login/google');
+  //   String url = OkejekBaseURL.apiUrl('login/google');
 
-    var data = {
-      "name": googleUser.displayName,
-      "email": googleUser.email,
-      "phone": inputPhoneController.text,
-      "token_id": tokenIdParams,
-    };
+  //   var data = {
+  //     "name": googleUser.displayName,
+  //     "email": googleUser.email,
+  //     "phone": inputPhoneController.text,
+  //     "token_id": tokenIdParams,
+  //   };
 
-    print(googleUser.displayName);
-    print(googleUser.email);
-    print(inputPhoneController.text);
-    print(tokenIdParams);
+  //   print(googleUser.displayName);
+  //   print(googleUser.email);
+  //   print(inputPhoneController.text);
+  //   print(tokenIdParams);
 
-    try {
-      var response = await dio.post(
-        url,
-        data: data,
-        options: Options(
-          headers: {
-            'Accepts': 'application/json',
-          },
-        ),
-      );
+  //   try {
+  //     var response = await dio.post(
+  //       url,
+  //       data: data,
+  //       options: Options(
+  //         headers: {
+  //           'Accepts': 'application/json',
+  //         },
+  //       ),
+  //     );
 
-      var responseBody = response.data;
-      print("maaf login $responseBody");
-      // check phone number condition
-      if (!responseBody['success']) {
-        errorMessage.value = responseBody['message'];
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              errorMessage.value,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        );
-        isLoading.value = false;
-      } else {
-        String userData = jsonEncode(responseBody);
-        String session = jsonDecode(jsonEncode(responseBody['data']['session']));
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        // storing to shareprefs -> json
-        preferences.setString('user_data', userData);
-        preferences.setString('user_session', session);
+  //     var responseBody = response.data;
+  //     print("maaf login $responseBody");
+  //     // check phone number condition
+  //     if (!responseBody['success']) {
+  //       errorMessage.value = responseBody['message'];
+  //       ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //         SnackBar(
+  //           backgroundColor: Colors.red,
+  //           content: Text(
+  //             errorMessage.value,
+  //             style: TextStyle(
+  //               fontSize: 12,
+  //               color: Colors.white,
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //       isLoading.value = false;
+  //     } else {
+  //       String userData = jsonEncode(responseBody);
+  //       String session = jsonDecode(jsonEncode(responseBody['data']['session']));
+  //       SharedPreferences preferences = await SharedPreferences.getInstance();
+  //       // storing to shareprefs -> json
+  //       preferences.setString('user_data', userData);
+  //       preferences.setString('user_session', session);
 
-        // preferences.setString('user_session', sessionDecode['data']['session']);
+  //       // preferences.setString('user_session', sessionDecode['data']['session']);
 
-        Get.offAll(() => BottomNavigation());
-        isLoading.value = false;
-      }
-    } on DioException catch (e) {
-      isLoading.value = false;
-      failedSnackbar();
-      print(e.message);
-    }
-  }
+  //       Get.offAll(() => BottomNavigation());
+  //       isLoading.value = false;
+  //     }
+  //   } on DioException catch (e) {
+  //     isLoading.value = false;
+  //     failedSnackbar();
+  //     print(e.message);
+  //   }
+  // }
 
   void failedSnackbar() {
     final snackBar = SnackBar(

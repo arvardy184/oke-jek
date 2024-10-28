@@ -116,7 +116,7 @@ class UserController extends GetxController {
       name.value = userData['data']['user']['name'] ?? '';
       email.value = userData['data']['user']['email'] ?? '';
       isValidated.value = userData['data']['user']['is_validated'] ?? false;
-      contactMobile.value = userData['data']['user']['contact_mobile'] ?? '';
+      contactMobile.value = userData['data']['user']['contact_phone'] ?? '';
       imageUrl.value = userData['data']['user']['image'] ?? '';
 
       contactPhone.value = userData['data']['user']['contact_phone'] ?? '';

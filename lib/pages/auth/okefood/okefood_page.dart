@@ -68,7 +68,7 @@ class OkeFoodPage extends StatelessWidget {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey[100],
-                        hintText: 'Ayam bakar kalasan',
+                        hintText: 'Cari resto...',
                         hintStyle: TextStyle(
                           fontSize: SizeConfig.safeBlockHorizontal * 3.3,
                           color: Colors.black38,

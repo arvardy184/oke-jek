@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:okejek_flutter/controller/auth/okemart/okemart_controller.dart';
 import 'package:okejek_flutter/controller/auth/store/store_controller.dart';
+import 'package:okejek_flutter/defaults/okejek_theme.dart';
 import 'package:okejek_flutter/defaults/size_config.dart';
 import 'package:okejek_flutter/models/auth/food/food_vendor_model.dart';
 
@@ -44,27 +45,40 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
           ? SizeConfig.safeBlockHorizontal * 60 / 3.6
           : appBarSize,
       child: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search, color: Colors.white),
-          )
-        ],
-        flexibleSpace: Opacity(
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(Icons.search, color: Colors.white),
+        //   )
+        // ],
+           flexibleSpace: Opacity(
           opacity: percent,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: CachedNetworkImageProvider(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/330px-Good_Food_Display_-_NCI_Visuals_Online.jpg'),
+                  foodVendor.imageUrl,
+                ),
                 fit: BoxFit.cover,
+              ),
+            ),
+            child: CachedNetworkImage(
+              imageUrl: foodVendor.imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(
+                child: Icon(
+                  Icons.broken_image,
+                  color: Colors.grey,
+                  size: 60,
+                ),
               ),
             ),
           ),
         ),
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: OkejekTheme.primary_color),
           onPressed: () => Get.back(),
         ),
         elevation: 0.0,

@@ -54,7 +54,7 @@ class OkefoodPaymentController extends GetxController {
 
  var dropDownValue = 'Cash'.obs;
   var dropDownValueList = ['Cash', 'OkePoint'];
-
+  var couponId = 0.obs;
   var pickUpLat = 0.0.obs;
   var pickUpLng = 0.0.obs;
   var destLat = 0.0.obs;
@@ -209,9 +209,12 @@ class OkefoodPaymentController extends GetxController {
         'type': orderType.toString(),
         'food_vendor_id': '${foodVendor.id}',
         'info': driverNote.value,
-        'coupon_id': promoCode.value,
+        'coupon_id': couponId.value,
         'shopping_items': shoppingJSON,
+        'app_platform': 'android',
+        'app_version': '900410',
       };
+      
 
       print("data create order $data");
 
@@ -348,6 +351,7 @@ class OkefoodPaymentController extends GetxController {
       } else {
         setPromoCode(couponCode);
        price.value = totalPembayaran.value - baseResponse.data.coupon!.discountFee!;
+        couponId.value = baseResponse.data.coupon!.id!;
         print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }
@@ -440,7 +444,7 @@ class OkefoodPaymentController extends GetxController {
     var queryParams = {
       'origin': '$outletLat,$outletLng',
       'destination': '${destLat.value},${destLng.value}',
-      'type': 3,
+      'type': 100,
       'api_token': session,
     };
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData;
 import 'package:dio/dio.dart' ;
 import 'package:okejek_flutter/defaults/url.dart';
@@ -55,6 +56,8 @@ Future<void> fetchMessages(String orderId) async {
         queryParameters: queryParams,
         options: Options(headers: {'Accepts': 'application/json'}),
       );
+
+      debugPrint("res di chat controller $response");
 
       if (response.statusCode == 200) {
         var newMessages = response.data['data']['order_chat_messages'];

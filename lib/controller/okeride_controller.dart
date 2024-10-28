@@ -80,6 +80,7 @@ class OkeRideController extends GetxController {
   var currentService = 'Ojek'.obs;
 
   var isAppInstalled = true.obs;
+  var couponId = ''.obs;
 
   Set<Marker> setMarker() {
     driverLocation.forEach(
@@ -192,8 +193,10 @@ class OkeRideController extends GetxController {
         'type': '${orderType.value}',
         'food_vendor_id': '',
         'info': '',
-        'coupon_id': '',
+        'coupon_id': couponId.value,
         'shopping_items': '',
+         'app_platform': 'android',
+        'app_version': '900410',
       };
 
       print(
@@ -729,6 +732,8 @@ class OkeRideController extends GetxController {
       } else {
         setPromoCode(couponCode);
         price.value = originPrice.value - baseResponse.data.coupon!.discountFee!;
+        couponId.value = baseResponse.data.coupon!.id.toString();
+        print(" coupon id $couponId");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }
     } on DioException catch (e) {

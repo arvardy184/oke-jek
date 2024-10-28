@@ -48,6 +48,7 @@ class OkeRentController extends GetxController {
     'Cash',
     'OkePoint',
   ];
+  var couponId = 0.obs;
 
   // Lokasi penjemputan
   var originAddress = ''.obs;
@@ -401,6 +402,7 @@ class OkeRentController extends GetxController {
         setPromoCode(couponCode);
         // price.value = originPrice.value - baseResponse.data.coupon!.discountFee!;
        selectedPricingId.value = selectedPricingId.value - baseResponse.data.coupon!.discountFee!;
+        couponId.value = baseResponse.data.coupon!.id!;
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
         print("harga ${selectedPricingId.value} ${baseResponse.data.coupon!.discountFee} ${price.value} ${selectedPackage}");
       }
@@ -450,7 +452,7 @@ Future<void> createRentalOrder() async {
       'recipient_name': '',
       'recipient_phone': '',
       'package_pricing_id': selectedPricingId.value,
-      if (promoCode.value.isNotEmpty) 'coupon_id': promoCode.value,
+      if (promoCode.value.isNotEmpty) 'coupon_id': couponId.value,
       if (driverNote.value.isNotEmpty) 'info': driverNote.value,
     });
 

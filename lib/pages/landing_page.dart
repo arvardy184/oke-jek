@@ -192,12 +192,16 @@ class LandingPage extends StatelessWidget {
                 height: 30,
               ),
               Center(
-                child: Text(
-                  'Ketentuan dan Kebijakan'.tr,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
-                        fontSize: SizeConfig.safeBlockHorizontal * 3.5,
-                      ),
+                child: TextButton(
+                  onPressed: () => landingController.openBrowserPrivacy(),
+                  child: Text(
+                    'Ketentuan dan Kebijakan'.tr,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Colors.white,
+                          fontSize: SizeConfig.safeBlockHorizontal * 3.5,
+                    )
+                  )
+                 
                 ),
               ),
             ],

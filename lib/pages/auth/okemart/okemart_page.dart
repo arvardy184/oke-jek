@@ -110,7 +110,7 @@ class OkeMartPage extends StatelessWidget {
             ),
             SizedBox(width: 12),
             Text(
-              'Cari produk atau toko',
+              'Cari outlet...',
               style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 3.3,
                 color: Colors.grey[600],

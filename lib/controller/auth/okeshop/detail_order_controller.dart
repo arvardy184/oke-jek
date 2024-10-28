@@ -40,7 +40,7 @@ class DetailOrderShopController extends GetxController {
   var originPrice = 0.obs;
   var cityId = 0.obs;
 
-  var ongkir = 6500.obs;
+  var ongkir = 0.obs;
   var jarak = 2.obs;
   var totalPembayaran = 0.obs;
 
@@ -63,7 +63,7 @@ class DetailOrderShopController extends GetxController {
   ];
 
   var errorMessage = ''.obs;
-
+  var couponId = 0.obs;
   // void initState() {
   //   super.onInit();
   //   print(totalPembayaran.value);
@@ -140,7 +140,7 @@ class DetailOrderShopController extends GetxController {
         'destination_address_detail': destLocationDetail.value,
         'food_vendor_id': 0,
         'info': driverNote.value,
-        'coupon_id': promoCode.value != 'Masukkan Promo' ? promoCode.value : '0',
+        'coupon_id': couponId.value,
         'shopping_items': shoppingJSON,
         'app_platform': 'android',
         'app_version': '900410',
@@ -282,6 +282,53 @@ class DetailOrderShopController extends GetxController {
       print("Error parsing city data $e");
     }
   }
+
+  //   void getPrice() async {
+  //   isFecthingData.value = true;
+  //   fetchSucess.value = false;
+  //   // String url = OkejekBaseURL.getHarga(outletLat, outletLng, destLat.value, destLng.value, 3);
+
+  //   String url = OkejekBaseURL.apiUrl('order/calculate');
+
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   String? session = preferences.getString("user_session");
+
+  //   var queryParams = {
+  //     'origin': '$outletLat,$outletLng',
+  //     'destination': '${destLat.value},${destLng.value}',
+  //     'type': 3,
+  //     'api_token': session,
+  //   };
+
+  //   try {
+  //     var response = await dio.post(
+  //       url,
+  //       queryParameters: queryParams,
+  //       options: Options(
+  //         headers: {
+  //           'Accepts': 'application/json',
+  //         },
+  //       ),
+  //     );
+
+  //     debugPrint("res di okefood payment controller order/calculate $response");
+
+  //     var responseBody = response.data;
+  //     print('********');
+  //     print(responseBody);
+  //     BaseResponse baseResponse = BaseResponse.fromJson(responseBody);
+  //     ongkir.value = baseResponse.data.calculateRequest!.fee;
+  //     fetchSucess.value = true;
+
+  //     // set a net totalPembayaran
+  //     totalPembayaran.value = totalBelanja + ongkir.value;
+  //     fetchSucess.value = true;
+  //     isFecthingData.value = false;
+  //   } on DioException catch (e) {
+  //     // showing failure text
+  //     print(e.message);
+  //   }
+  // }
   
   void getCouponCode(String couponCode) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -322,6 +369,7 @@ class DetailOrderShopController extends GetxController {
       } else {
         setPromoCode(couponCode);
         price.value = totalPembayaran.value - baseResponse.data.coupon!.discountFee!;
+         couponId.value = baseResponse.data.coupon!.id!;
                 print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }

@@ -72,6 +72,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     historyController.driverLocationTimer?.cancel();
     chatController.stopPolling();
 
+    // Get.back();
   //  Get.defaultDialog(
   //     title: 'Pesanan Dibatalkan',
   //     titleStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -237,7 +238,7 @@ String _getStatusUpdateMessage(int status) {
   @override
   Widget build(BuildContext context) {
     print("di order detail page ${historyController.driverLocation}");
-
+      print("cek total pembayaran ${currentOrder.value.payment?.amount}");
     double lat = double.parse(currentOrder.value.originLatlng.split(",")[0]);
     double lng = double.parse(currentOrder.value.originLatlng.split(",")[1]);
 

@@ -46,6 +46,15 @@ class LandingController extends GetxController {
       print('location permission granted');
     }
   }
+    void openBrowserPrivacy() async {
+    String url = OkejekBaseURL.privacyPolicy;
+
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   void changeCurrentTab(value) {
     print('changed to $value');

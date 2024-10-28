@@ -36,11 +36,11 @@ Future<void> _initializeApp() async {
   Get.put(FCMController());
 }
 
+
 Future<void> _configureSystemUI() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 }
-
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

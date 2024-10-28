@@ -33,24 +33,24 @@ class ShoppingEstimasi extends StatelessWidget {
           return detailShopController.pickUplocation.isNotEmpty && detailShopController.destLocation.isNotEmpty
               ? Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Ongkir',
-                          style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6),
-                        ),
-                        Obx(
-                          () => Text(
-                            currencyFormatter.format(detailShopController.ongkir.value),
-                            style: TextStyle(
-                              fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       'Ongkir',
+                    //       style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6),
+                    //     ),
+                    //     Obx(
+                    //       () => Text(
+                    //         currencyFormatter.format(detailShopController.ongkir.value),
+                    //         style: TextStyle(
+                    //           fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(
                       height: SizeConfig.safeBlockVertical * 10 / 7.56,
                     ),

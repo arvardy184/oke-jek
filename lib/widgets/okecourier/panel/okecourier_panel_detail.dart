@@ -161,12 +161,12 @@ class OkeCourierPanelDetail extends StatelessWidget {
                           controller: detailBarangController,
                         ),
                         ImprovedTextField(
-                          label: "Berat Barang (gr)",
+                          label: "Berat Barang (gr) (opsional)",
                           controller: beratBarangController,
                           isNumberField: true,
                         ),
                         ImprovedTextField(
-                          label: "Harga Barang (Rp)",
+                          label: "Nilai Barang (Rp) (opsional)",
                           controller: biayaBarangController,
                           isNumberField: true,
                         ),
