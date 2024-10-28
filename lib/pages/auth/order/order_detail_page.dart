@@ -130,7 +130,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
 
   void startOrderStatusUpdates() {
-    _timer = Timer.periodic(Duration(seconds: 11), (_) {
+    _timer = Timer.periodic(Duration(seconds: 5), (_) {
       refreshOrderStatus();
     });
   }

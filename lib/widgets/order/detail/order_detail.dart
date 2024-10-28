@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:okejek_flutter/controller/auth/order/order_inprogress_controller.dart';
 import 'package:okejek_flutter/controller/landing_controller.dart';
 import 'package:okejek_flutter/defaults/okejek_theme.dart';
-import 'package:okejek_flutter/defaults/size_config.dart';
 import 'package:okejek_flutter/models/auth/order_model.dart';
 import 'package:okejek_flutter/models/item_model.dart';
 
@@ -13,7 +12,7 @@ class OrderDetail extends StatelessWidget {
   final Map<String, dynamic> driverData;
 
   OrderDetail({required this.order, required this.driverData});
-  
+
   final OrderInProgressController controller = Get.find<OrderInProgressController>();
   final LandingController landingController = Get.put(LandingController());
   final currencyFormatter = NumberFormat.currency(locale: 'ID', symbol: 'Rp', decimalDigits: 0);
@@ -31,10 +30,11 @@ class OrderDetail extends StatelessWidget {
             // _buildOrderStatus(),
             const SizedBox(height: 20),
             if (order.items.isNotEmpty) _buildItemsList(),
+            if (order.courier?.id != null) _buildCourierList(),
             const SizedBox(height: 20),
             _buildOrderSummary(),
             const SizedBox(height: 20),
-            // if (order.status == 0 || order.status == 1) 
+            // if (order.status == 0 || order.status == 1)
             _buildCancelButton(),
             const SizedBox(height: 30),
           ],
@@ -99,7 +99,7 @@ class OrderDetail extends StatelessWidget {
   Widget _buildOrderStatus() {
     final statusText = _getStatusText(order.status);
     final statusColor = _getStatusColor(order.status);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -148,7 +148,6 @@ class OrderDetail extends StatelessWidget {
               itemBuilder: (context, index) {
                 Item item = Item.fromJson(order.items[index]);
                 double subTotal = double.parse(item.price) * item.qty.toDouble();
-                
                 return Row(
                   children: [
                     Expanded(
@@ -189,6 +188,134 @@ class OrderDetail extends StatelessWidget {
     );
   }
 
+Widget _buildCourierList() {
+    if (order.courier == null) return SizedBox.shrink();
+    
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Detail Pengiriman',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildCourierSection(
+              'Pengirim',
+              order.courier!.senderName,
+              order.courier!.senderPhone,
+            ),
+            const Divider(height: 24),
+            _buildCourierSection(
+              'Penerima',
+              order.courier!.recipientName,
+              order.courier!.recipientPhone,
+            ),
+            const Divider(height: 24),
+            _buildCourierItemDetails(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCourierSection(String title, String name, String phone) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.person_outline, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            Text(
+              name,
+              style: const TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Icon(Icons.phone_outlined, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            Text(
+              phone,
+              style: const TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCourierItemDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Detail Barang',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.inventory_2_outlined, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                order.courier!.itemDetail,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Icon(Icons.scale_outlined, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            Text(
+              '${order.courier!.weight} kg',
+              style: const TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
+        if (order.courier!.itemAmount > 0) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.attach_money_outlined, size: 20, color: Colors.grey[600]),
+              const SizedBox(width: 8),
+              Text(
+                currencyFormatter.format(order.courier!.itemAmount),
+                style: const TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
   Widget _buildOrderSummary() {
     print("data diskon ${order.discount}");
     return Card(
@@ -207,11 +334,9 @@ class OrderDetail extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildSummaryRow('Ongkir', double.parse(order.fee)),
-            if (order.items.isNotEmpty)
-              _buildSummaryRow('Subtotal Belanja', double.parse(order.totalShopping)),
-            if (order.discount > 0)
-              _buildSummaryRow('Diskon',order.discount.toDouble(), isDiscount: true),
+            _buildSummaryRow('Ongkir', double.parse(order.originalFee.toString())),
+            if (order.items.isNotEmpty) _buildSummaryRow('Subtotal Belanja', double.parse(order.totalShopping)),
+            if (order.discount > 0) _buildSummaryRow('Diskon', order.discount.toDouble(), isDiscount: true),
             const Divider(height: 32),
             _buildSummaryRow(
               'Total',

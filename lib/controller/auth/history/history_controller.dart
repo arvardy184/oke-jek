@@ -202,7 +202,7 @@ class HistoryController extends GetxController {
 
   void startDriverLocationUpdates(Order order) {
     driverLocationTimer?.cancel();
-    driverLocationTimer = Timer.periodic(Duration(seconds: 11), (_) {
+    driverLocationTimer = Timer.periodic(Duration(seconds: 5), (_) {
       updateDriverLocation(order);
       fcmController.refreshAndRegisterToken();
       // checkOrder(order.id);

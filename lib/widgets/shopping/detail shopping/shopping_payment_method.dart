@@ -24,6 +24,7 @@ class ShoppingPaymentMethod extends StatelessWidget {
     print("pickUplocation: ${detailShopController.pickUplocation}");
     print("destLocation: ${detailShopController.destLocation}");
     return Obx(() {
+      bool isLocationValid = detailShopController.pickUplocation.isNotEmpty && detailShopController.destLocation.isNotEmpty;
       print("Rebuilding Obx widget");
       print("pickUplocation: ${detailShopController.pickUplocation}");
       print("destLocation: ${detailShopController.destLocation}");
@@ -208,30 +209,31 @@ class ShoppingPaymentMethod extends StatelessWidget {
                 height: SizeConfig.safeBlockVertical * 30 / 7.56,
               ),
               ElevatedButton(
-                onPressed: detailShopController.isLoading.value
+                onPressed: (detailShopController.isLoading.value || !isLocationValid)
                     ? null
                     : () {
-                        if (detailShopController.pickUplocation.value.isEmpty ||
-                            detailShopController.destLocation.value.isEmpty) {
-                          Get.snackbar('Peringatan', 'Mohon lengkapi alamat pickup dan tujuan',
-                              backgroundColor: Colors.red, colorText: Colors.white);
-                          return;
-                        }
                         detailShopController.isLoading.value = true;
                         detailShopController.createOrder(showAlertDialog).then((_) {
-                          detailShopController.isLoading.value = false; // Set loading to false when done
+                          detailShopController.isLoading.value = false;
                         });
                       },
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, SizeConfig.safeBlockVertical * 40 / 7.56),
-                  backgroundColor: OkejekTheme.primary_color,
+                  backgroundColor: isLocationValid 
+                    ? OkejekTheme.primary_color
+                    : Colors.grey[300],
+                  foregroundColor: isLocationValid 
+                    ? Colors.white
+                    : Colors.grey[600],
+                  disabledBackgroundColor: Colors.grey[300],
+                  disabledForegroundColor: Colors.grey[600],
                 ),
                 child: detailShopController.isLoading.value
                     ? SizedBox(
                         width: 24,
                         height: 24,
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(isLocationValid ? Colors.white : Colors.grey[600]!),
                         ),
                       )
                     : Text(

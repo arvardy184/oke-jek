@@ -15,7 +15,6 @@ class OkeFoodListOutletPage extends StatefulWidget {
 class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
   final OkeFoodController okeFoodController = Get.find();
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -28,7 +27,6 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -42,19 +40,63 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
+      appBar: AppBar(
+        elevation: 0.5,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+        ),
+        title: const Text(
+          'Daftar Restoran',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Obx(() {
         if (okeFoodController.isLoading.value && okeFoodController.foodVendors.isEmpty) {
           return Center(
             child: CircularProgressIndicator(
-              color: Theme.of(context).primaryColor,
-            )
+              color: OkejekTheme.primary_color,
+            ),
           );
         }
-        return ListView.builder(
+
+        if (okeFoodController.foodVendors.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.restaurant_outlined,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Belum ada restoran tersedia',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.separated(
           controller: _scrollController,
           padding: const EdgeInsets.symmetric(vertical: 8),
           itemCount: okeFoodController.foodVendors.length + 1,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: Colors.grey[200],
+          ),
           itemBuilder: (context, index) {
             if (index < okeFoodController.foodVendors.length) {
               return _buildFoodVendorItem(okeFoodController.foodVendors[index]);
@@ -66,44 +108,6 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
           },
         );
       }),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      elevation: 0.5,
-      backgroundColor: Colors.white,
-      leading: IconButton(
-        onPressed: () => Get.back(),
-        icon: const Icon(Icons.arrow_back, color: Colors.black),
-      ),
-      title: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            hintText: 'Cari resto..',
-            hintStyle: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.grey[600],
-            ),
-          ),
-          style: const TextStyle(
-            color: Colors.black87,
-            fontSize: 14,
-          ),
-        ),
-      ),
     );
   }
 
@@ -141,7 +145,7 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  _buildVendorInfo(),
+                  _buildVendorInfo(foodVendor),
                 ],
               ),
             ),
@@ -152,23 +156,33 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
   }
 
   Widget _buildVendorImage(FoodVendor foodVendor) {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.grey[200],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: foodVendor.imageUrl != null
-            ? CachedNetworkImage(
-                imageUrl: foodVendor.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => _buildImagePlaceholder(),
-                errorWidget: (context, url, error) => _buildImagePlaceholder(),
-              )
-            : _buildImagePlaceholder(),
+    return Hero(
+      tag: 'vendor-${foodVendor.id}',
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: foodVendor.imageUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: foodVendor.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => _buildImagePlaceholder(),
+                  errorWidget: (context, url, error) => _buildImagePlaceholder(),
+                )
+              : _buildImagePlaceholder(),
+        ),
       ),
     );
   }
@@ -186,7 +200,7 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
     );
   }
 
-  Widget _buildVendorInfo() {
+  Widget _buildVendorInfo(FoodVendor foodVendor) {
     return Row(
       children: [
         Container(
@@ -200,13 +214,13 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
               Icon(
                 Icons.star,
                 size: 16,
-                color: OkejekTheme.primary_color, //[700]
+                color: OkejekTheme.primary_color,
               ),
               const SizedBox(width: 4),
               Text(
                 '4.5',
                 style: TextStyle(
-                  color: OkejekTheme.primary_color,//[700]
+                  color: OkejekTheme.primary_color,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -248,7 +262,9 @@ class _OkeFoodListOutletPageState extends State<OkeFoodListOutletPage> {
     return Container(
       padding: const EdgeInsets.all(16.0),
       alignment: Alignment.center,
-      child: const CircularProgressIndicator(),
+      child: CircularProgressIndicator(
+        color: OkejekTheme.primary_color,
+      ),
     );
   }
 }

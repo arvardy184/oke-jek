@@ -87,6 +87,7 @@ class OkeCourierController extends GetxController {
     print('changed submit promo to ' + isSubmitPromo.value.toString());
   }
 
+
   void cancelPromo() {
     promoCode.value = '';
     update();

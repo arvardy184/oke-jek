@@ -69,16 +69,26 @@ class DetailOrderShopController extends GetxController {
   //   super.onInit();
   //   print(totalPembayaran.value);
   // }
-  @override
+@override
   void onInit() {
     super.onInit();
-    ever(originLat, (_) => updateMarkers());
-    ever(originLng, (_) => updateMarkers());
-    ever(destLat, (_) => updateMarkers());
-    ever(destLng, (_) => updateMarkers());
+    ever(originLat, (_) => _triggerPriceCheck());
+    ever(originLng, (_) => _triggerPriceCheck());
+    ever(destLat, (_) => _triggerPriceCheck());
+    ever(destLng, (_) => _triggerPriceCheck());
     print("initial total pembayaran: ${totalPembayaran.value}");
   }
 
+void _triggerPriceCheck(){
+  if(canCalculatePrice()){
+    checkPrice();
+  }
+}
+
+ bool canCalculatePrice() {
+    return originLat.value != 0 && originLng.value != 0 && 
+           destLat.value != 0 && destLng.value != 0;
+  }
  void updateMarkers() {
     markers.clear();
     if (originLat.value != 0 && originLng.value != 0) {
@@ -285,66 +295,19 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
     }
   }
 
-  //   void getPrice() async {
-  //   isFecthingData.value = true;
-  //   fetchSucess.value = false;
-  //   // String url = OkejekBaseURL.getHarga(outletLat, outletLng, destLat.value, destLng.value, 3);
-
-  //   String url = OkejekBaseURL.apiUrl('order/calculate');
-
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   String? session = preferences.getString("user_session");
-
-  //   var queryParams = {
-  //     'origin': '$outletLat,$outletLng',
-  //     'destination': '${destLat.value},${destLng.value}',
-  //     'type': 3,
-  //     'api_token': session,
-  //   };
-
-  //   try {
-  //     var response = await dio.post(
-  //       url,
-  //       queryParameters: queryParams,
-  //       options: Options(
-  //         headers: {
-  //           'Accepts': 'application/json',
-  //         },
-  //       ),
-  //     );
-
-  //     debugPrint("res di okefood payment controller order/calculate $response");
-
-  //     var responseBody = response.data;
-  //     print('********');
-  //     print(responseBody);
-  //     BaseResponse baseResponse = BaseResponse.fromJson(responseBody);
-  //     ongkir.value = baseResponse.data.calculateRequest!.fee;
-  //     fetchSucess.value = true;
-
-  //     // set a net totalPembayaran
-  //     totalPembayaran.value = totalBelanja + ongkir.value;
-  //     fetchSucess.value = true;
-  //     isFecthingData.value = false;
-  //   } on DioException catch (e) {
-  //     // showing failure text
-  //     print(e.message);
-  //   }
-  // }
   
-  void getCouponCode(String couponCode) async {
+ void getCouponCode(String couponCode) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString("user_session");
 
     try {
-      getCityId();
+      await getCityId();
 
-      // String url = OkejekBaseURL.getPromoCoupon(couponCode, 0, cityId.value);
       String url = OkejekBaseURL.apiUrl('coupon/search');
 
       var queryParams = {
-        'code': '$couponCode',
-        'service': 0,
+        'code': couponCode,
+        'service': 2, // Changed to 2 for shopping service
         'city_id': '${cityId.value}',
         'api_token': session,
       };
@@ -353,41 +316,102 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
         url,
         queryParameters: queryParams,
         options: Options(
-          headers: {
-            'Accepts': 'application/json',
-          },
+          headers: {'Accepts': 'application/json'},
         ),
       );
 
-      debugPrint("res di okeride controller coupon/search $response");
+      debugPrint("Coupon search response: ${response.data}");
 
       var responseBody = response.data;
-
       BaseResponse baseResponse = BaseResponse.fromJson(responseBody);
+      
       if (baseResponse.data.coupon!.id == 0) {
         Fluttertoast.showToast(msg: 'Kode tidak ditemukan', fontSize: 12);
         setPromoCode('');
-        price.value = 0;
+        price.value = totalPembayaran.value;
       } else {
         setPromoCode(couponCode);
-        price.value = totalPembayaran.value - baseResponse.data.coupon!.discountFee!;
-         couponId.value = baseResponse.data.coupon!.id!;
-                print("price: ${price.value} ${originPrice.value} ${baseResponse.data.coupon!.discountFee} ${totalPembayaran.value} ");
+        int discount = baseResponse.data.coupon!.discountFee!;
+        price.value = totalPembayaran.value - discount;
+        couponId.value = baseResponse.data.coupon!.id!;
+        debugPrint("Applied discount: $discount, New price: ${price.value}");
         Fluttertoast.showToast(msg: 'Kode berhasil dipakai', fontSize: 12);
       }
     } on DioException catch (e) {
-      print(e.message);
+      debugPrint('Error applying coupon: ${e.message}');
+      Fluttertoast.showToast(msg: 'Gagal menggunakan kode promo', fontSize: 12);
     }
   }
 
-  void updateTotalPembayaran(int totalBelanja)
-{
-  int newTotal = ongkir.value + totalBelanja;
-  if(totalPembayaran.value != newTotal){
-    totalPembayaran.value = newTotal;
-    print('total pembayaran : ' + totalPembayaran.value.toString());
+Future<void> checkPrice() async {
+    try {
+      isLoading.value = true;
+
+      // Validasi koordinat
+      if (!canCalculatePrice()) {
+        throw Exception('Koordinat tidak valid');
+      }
+
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? session = preferences.getString("user_session");
+
+      if (session == null) {
+        throw Exception('Session tidak ditemukan');
+      }
+
+      String url = OkejekBaseURL.apiUrl('order/calculate');
+
+      final response = await dio.post(
+        url,
+        queryParameters: {
+          'origin': '${originLat.value},${originLng.value}',
+          'destination': '${destLat.value},${destLng.value}',
+          'type': 2, // 2 for shopping order
+          'api_token': session,
+        },
+        options: Options(
+          headers: {'Accepts': 'application/json'},
+        ),
+      );
+
+      debugPrint("Response calculate: ${response.data}");
+
+      if (response.data['success'] == true) {
+        // Update ongkir
+ ongkir.value = response.data['data']['calculated_request']['fee'];
+        debugPrint("Ongkir updated: ${ongkir.value}");
+        
+        // Update total pembayaran
+        int currentTotal = controller.total.value;
+        updateTotalPembayaran(currentTotal);
+        
+        // If there's an active promo, recalculate the discounted price
+        if (promoCode.value.isNotEmpty) {
+          price.value = totalPembayaran.value - (totalPembayaran.value - price.value);
+        }
+      } else {
+        throw Exception(response.data['message'] ?? 'Gagal mendapatkan ongkir');
+      }
+    } catch (e) {
+      debugPrint('Error calculating price: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
+
+
+ void updateTotalPembayaran(int totalBelanja) {
+    int newTotal = ongkir.value + totalBelanja;
+    if (totalPembayaran.value != newTotal) {
+      totalPembayaran.value = newTotal;
+      // Set the initial price value if no promo is active
+      if (promoCode.value.isEmpty) {
+        price.value = totalPembayaran.value;
+      }
+      debugPrint('Updated total pembayaran: ${totalPembayaran.value}');
+    }
+  }
   void setTotalPembayaran(int totalBelanja) {
    updateTotalPembayaran(totalBelanja);
     // totalPembayaran.value = ongkir.value + totalBelanja;
@@ -472,14 +496,21 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();
     promoCode.value = value;
   }
 
-  Future<bool> fetchDataPayment(int totalBelanja) => Future.delayed(
-        Duration(seconds: 2),
-        () {
-          setTotalPembayaran(totalBelanja);
-          isFecthingData.value = false;
-          return isFecthingData.value;
-        },
-      );
+ Future<bool> fetchDataPayment(int totalBelanja) async {
+    try {
+      if (canCalculatePrice()) {
+        await checkPrice();
+      } else {
+        updateTotalPembayaran(totalBelanja);
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Error fetching payment data: $e');
+      return false;
+    } finally {
+      isFecthingData.value = false;
+    }
+  }
 
   Future<bool> fetchDataDestination() => Future.delayed(
         Duration(seconds: 2),

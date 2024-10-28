@@ -22,21 +22,26 @@ class DetailOrderShopPage extends StatelessWidget {
   final Completer<GoogleMapController> _controller = Completer();
 
   CameraPosition _getInitialPosition(DetailOrderShopController detailShopController) {
-    print(" getInitialPosition: ${detailShopController.originLat.value} ${detailShopController.originLng.value} ${detailShopController.destLat.value} ${detailShopController.destLng.value}");
-    if(detailShopController.originLat.value != 0 && detailShopController.destLat.value != 0 && detailShopController.originLng.value != 0 && detailShopController.destLng.value != 0){
+    print(
+        " getInitialPosition: ${detailShopController.originLat.value} ${detailShopController.originLng.value} ${detailShopController.destLat.value} ${detailShopController.destLng.value}");
+    if (detailShopController.originLat.value != 0 &&
+        detailShopController.destLat.value != 0 &&
+        detailShopController.originLng.value != 0 &&
+        detailShopController.destLng.value != 0) {
       double centerLat = (detailShopController.originLat.value + detailShopController.destLat.value) / 2;
       double centerLng = (detailShopController.originLng.value + detailShopController.destLng.value) / 2;
       return CameraPosition(
         target: LatLng(centerLat, centerLng),
         zoom: 12.0,
       );
-    }else{
+    } else {
       return CameraPosition(
         target: LatLng(-7.9826145, 112.6286226),
         zoom: 12.0,
       );
     }
   }
+
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController destiController = TextEditingController();
   final TextEditingController promoController = TextEditingController();
@@ -52,7 +57,7 @@ class DetailOrderShopPage extends StatelessWidget {
     print("dosp destLocation: ${detailShopController.destLocation.value}");
     print("dosp originLocation: ${detailShopController.originLocation.value}");
     print("dosp originLocationDetail: ${detailShopController.originLocationDetail.value}");
-     
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
@@ -70,7 +75,7 @@ class DetailOrderShopPage extends StatelessWidget {
             fontSize: SizeConfig.safeBlockHorizontal * 5,
           ),
         ),
-      leading: IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back, color: OkejekTheme.primary_color),
           onPressed: () => Navigator.pop(context),
         ),
@@ -96,17 +101,15 @@ class DetailOrderShopPage extends StatelessWidget {
       ),
     );
   }
-  
 
   Widget listItem(
       BuildContext context, OkeShopController okeShopcontroller, DetailOrderShopController detailShopController) {
-        print("dospli Building listItem");
+    print("dospli Building listItem");
     print("dospli pickUplocation: ${detailShopController.pickUplocation.value}");
     print("dospli destLocation: ${detailShopController.destLocation.value}");
-        // print(" detail shop controller: ${detailShopController.pickUplocation.value} detail shop controller: ${detailShopController.destLocation.value}");
-    return Obx(
-      (){  
-        return Column(
+    // print(" detail shop controller: ${detailShopController.pickUplocation.value} detail shop controller: ${detailShopController.destLocation.value}");
+    return Obx(() {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           detailShopController.pickUplocation.value.isNotEmpty && detailShopController.destLocation.value.isNotEmpty
@@ -160,14 +163,13 @@ class DetailOrderShopPage extends StatelessWidget {
                 // total estimasi
                 ShoppingEstimasi(currencyFormatter: currencyFormatter),
 
-              
                 // payment method
                 ShoppingPaymentMethod(),
               ],
             ),
           ),
         ],
-        );
-      });
+      );
+    });
   }
 }

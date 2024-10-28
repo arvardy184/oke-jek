@@ -321,7 +321,7 @@ class Receipt extends StatelessWidget {
               ),
             ),
             Text(
-              currencyFormatter.format(double.parse(order.fee)),
+              currencyFormatter.format(double.parse(order.originalFee.toString())),
               style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6,
               ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:okejek_flutter/models/auth/courier_model.dart';
 import 'package:okejek_flutter/models/auth/driver_model.dart';
 import 'package:okejek_flutter/models/auth/payment_model.dart';
 import 'package:okejek_flutter/models/login/user_model.dart';
@@ -75,7 +76,7 @@ class Order {
   final User? user;
   final List<dynamic> items;
   final List<dynamic> payments;
-  final dynamic courier;
+  final Courier? courier;
   final Payment? payment;
   final int androidVersion;
   final double originalFee;
@@ -121,7 +122,7 @@ class Order {
         user: json["user"] != null ? User.fromJson(json["user"]) : null,
         items: _parseList(json["items"]),
         payments: _parseList(json["payments"]),
-        courier: json["courier"] ?? "",
+        courier: json["courier"] != null ? Courier.fromJson(json["courier"]) : null,
         payment: json["payment"] != null ? Payment.fromJson(json["payment"]) : null,
         androidVersion: json["android_version"] ?? 0,
         originalFee: double.tryParse(json["original_fee"]?.toString() ?? "0.0") ?? 0.0,
@@ -160,7 +161,7 @@ class Order {
         "user": user?.toJson(),
         "items": items,
         "payments": payments,
-        "courier": courier,
+        "courier": courier?.toJson(),
         "payment": payment?.toJson(),
         "android_version": androidVersion,
         "original_fee": originalFee,
