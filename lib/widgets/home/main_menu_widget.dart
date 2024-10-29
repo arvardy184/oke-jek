@@ -115,7 +115,7 @@ class MainMenu extends StatelessWidget {
             //       screen: OkeExpressPage(),
             //     );
             //   }),
-            // if (servicesController.isMartAvailable.value)
+            if (servicesController.isMartAvailable.value)
               menuItem('Oke Mart', Image.asset('assets/icons/10-2021/mart.png'), () {
                 PersistentNavBarNavigator.pushNewScreen(
                   context,

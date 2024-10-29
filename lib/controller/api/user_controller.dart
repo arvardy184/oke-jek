@@ -218,57 +218,90 @@ class UserController extends GetxController {
     }
   }
 
-  void showUserDialog(var responseBody) async {
-    String userMsgTitle = responseBody['data']['city']['configs']['user_message_title'];
-    String userMsg = responseBody['data']['city']['configs']['user_message'];
+void showUserDialog(var responseBody) async {
+  String userMsgTitle = responseBody['data']['city']['configs']['user_message_title'];
+  String userMsg = responseBody['data']['city']['configs']['user_message'];
 
-    if (userMsg.isNotEmpty && userMsgTitle.isNotEmpty) {
-      DateTime currentDateTime = DateTime.now();
+  if (userMsg.isNotEmpty && userMsgTitle.isNotEmpty) {
+    DateTime currentDateTime = DateTime.now();
 
-      // get user last seen dialog
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      String? lastRead = preferences.getString('user_msg_last_read');
+    // Get user last seen dialog
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? lastRead = preferences.getString('user_msg_last_read');
 
-      // check last seen pref
-      if (lastRead == null) {
+    // Check last seen preference
+    if (lastRead == null) {
+      preferences.setString('user_msg_last_read', currentDateTime.toString());
+      _showCustomDialog(userMsgTitle, userMsg);
+    } else {
+      var lstRead = DateTime.parse(lastRead);
+      var nextRead = lstRead.add(Duration(hours: 2));
+
+      print('last read $lstRead');
+      print('next read $nextRead');
+      print(currentDateTime.isAfter(nextRead));
+
+      // Show dialog on next 2 hours
+      if (currentDateTime.isAfter(nextRead)) {
+        _showCustomDialog(userMsgTitle, userMsg);
+
+        // Set last seen to recent time
         preferences.setString('user_msg_last_read', currentDateTime.toString());
-        Get.defaultDialog(
-          title: userMsgTitle,
-          middleText: userMsg,
-          backgroundColor: Colors.white,
-          titleStyle: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-          middleTextStyle: TextStyle(color: Colors.black, fontSize: 12),
-        );
-      } else {
-        var lstRead = DateTime.parse(lastRead);
-        var nextRead = lstRead.add(Duration(hours: 2));
-
-        print('last read $lstRead');
-        print('next read $nextRead');
-        print(currentDateTime.isAfter(nextRead));
-
-        // show dialog on next 2 hours
-        if (currentDateTime.isAfter(nextRead)) {
-          Get.defaultDialog(
-            title: "Message Title",
-            middleText: "Message",
-            backgroundColor: Colors.white,
-            titleStyle: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-            middleTextStyle: TextStyle(color: Colors.black, fontSize: 12),
-          );
-
-          // set last seen to recent time
-          preferences.setString('user_msg_last_read', currentDateTime.toString());
-        }
       }
     }
   }
+}
+
+void _showCustomDialog(String title, String message) {
+  Get.defaultDialog(
+    title: title,
+    middleText: message,
+    backgroundColor: Colors.white,
+    radius: 15,
+    titlePadding: EdgeInsets.only(top: 20),
+    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    barrierDismissible: false,
+    titleStyle: TextStyle(
+      color: Colors.blueAccent,
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    ),
+    middleTextStyle: TextStyle(color: Colors.black87, fontSize: 14),
+    actions: [
+      TextButton(
+        onPressed: () => Get.back(),
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.blueAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
+        child: Text(
+          'OK',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ],
+    content: Column(
+      children: [
+        Icon(
+          Icons.info_outline,
+          color: Colors.blueAccent,
+          size: 50,
+        ),
+        SizedBox(height: 10),
+        Text(
+          message,
+          style: TextStyle(color: Colors.black87, fontSize: 14),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+}
+
 }

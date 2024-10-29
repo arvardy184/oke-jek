@@ -464,7 +464,7 @@ Divider(),
 
   Widget _buildProfileIcon() {
     return SizedBox(
-      width: 45,
+      width: SizeConfig.blockSizeHorizontal * 15,
       child: GestureDetector(
         onTap: () {
           landingController.changeTab(3);

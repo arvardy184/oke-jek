@@ -14,7 +14,7 @@ class OkeRentalPage extends StatelessWidget {
         foregroundColor: OkejekTheme.primary_color,
         backgroundColor: OkejekTheme.bg_color,
         elevation: 0,
-        title: Text('Oke Rent', style: TextStyle(color: OkejekTheme.primary_color)),
+        title: Text('Oke Rental', style: TextStyle(color: OkejekTheme.primary_color)),
       ),
       body: SafeArea(
         child: Column(
@@ -59,7 +59,7 @@ class OkeRentalPage extends StatelessWidget {
               end: Alignment.bottomRight,
             ),
             image: DecorationImage(
-              image: AssetImage('assets/images/logo_rent.jpg'),
+              image: AssetImage('assets/icons/10-2021/rent.png'),
               fit: BoxFit.cover,
             ),
             boxShadow: [

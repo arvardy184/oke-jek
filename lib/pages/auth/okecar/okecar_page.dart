@@ -223,18 +223,18 @@ class OkeCarPage extends StatelessWidget {
                                   // icon location
                                   indicatorBuilder: (context, index) {
                                     return index == 0
-                                        ? Container(
+                                       ? Container(
                                             height: SizeConfig.safeBlockHorizontal * 30 / 3.6,
                                             width: SizeConfig.safeBlockHorizontal * 30 / 3.6,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: OkejekTheme.primary_color,
+                                              color: Colors.red,
                                             ),
                                             margin: EdgeInsets.only(
                                                 bottom: SizeConfig.safeBlockHorizontal * 10 / 3.6,
                                                 right: SizeConfig.safeBlockHorizontal * 10 / 3.6),
                                             child: Icon(
-                                              Icons.pedal_bike,
+                                              Icons.pin_drop_outlined,
                                               color: Colors.white,
                                             ),
                                           )
@@ -243,7 +243,7 @@ class OkeCarPage extends StatelessWidget {
                                             width: SizeConfig.safeBlockHorizontal * 30 / 3.6,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: OkejekTheme.primary_color,
+                                              color: Colors.green,
                                             ),
                                             margin: EdgeInsets.only(
                                                 top: SizeConfig.safeBlockHorizontal * 10 / 3.6,

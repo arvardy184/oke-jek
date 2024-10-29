@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:okejek_flutter/controller/auth/okerental/okerental_controller.dart';
+import 'package:okejek_flutter/defaults/okejek_theme.dart';
 import 'package:okejek_flutter/models/rental_model.dart';
 import 'package:okejek_flutter/pages/auth/okerental/detail_order_rental_page.dart';
 import 'package:shimmer/shimmer.dart'; // For number formatting
@@ -94,14 +95,14 @@ class PackageCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundColor: Colors.red[100],
+                backgroundColor: Colors.purple[100],
                 child: Stack(
                   children: [
-                    Icon(Icons.directions_car, size: 30, color: Colors.red),
+                    Icon(Icons.directions_car, size: 30, color:OkejekTheme  .primary_color),
                     Positioned(
                       right: 0,
                       bottom: 0,
-                      child: Icon(Icons.access_time, size: 15, color: Colors.red),
+                      child: Icon(Icons.access_time, size: 15, color: OkejekTheme.primary_color),
                     ),
                   ],
                 ),
@@ -129,7 +130,7 @@ class PackageCard extends StatelessWidget {
                       ).format(package.price),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: OkejekTheme.primary_color,
                         fontSize: 16,
                       ),
                     ),

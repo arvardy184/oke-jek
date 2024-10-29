@@ -1,9 +1,9 @@
 import 'dart:io';
 
 class OkejekBaseURL {
-  //  static final _urlOkejek = 'api.okejack.id';
+    static final _urlOkejek = 'api.okejack.id';
 // static final _urlOkejek = 'okejek.loketbayar.co.id';
-static final _urlOkejek = 'bossnomor.online';
+//static final _urlOkejek = 'bossnomor.online';
   static final _path = 'api/okejack/v1';
 
   static String apiUrl(String path, {Map<String, dynamic> queryParameter = const {}}) {
@@ -16,7 +16,7 @@ static final _urlOkejek = 'bossnomor.online';
   /* EXTERNAL API or MEDIA  */
   static String telegram = 'https://t.me/OkeJekID';
   static String registerDriver = 'https://okejek.id/cara-mendaftar-mitra-driver-okejek/';
-  static String registerMerchant = 'https://okejek.id/merchant/';
+  static String registerMerchant = 'https://okejek.id/oke-merchant/';
   static String privacyPolicy = 'https://okejek.id/privacy-policy/';
   static String termsCondition = 'https://okejek.id/terms-and-condition/';
 
