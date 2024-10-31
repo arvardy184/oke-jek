@@ -80,7 +80,7 @@ class _ChatPageState extends State<ChatPage> {
                         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: isUser ? Colors.blue[100] : Colors.grey[300],
+                          color: isUser ? Colors.purple[100] : Colors.grey[300],
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Text(message['content']),

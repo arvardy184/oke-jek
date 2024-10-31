@@ -232,7 +232,7 @@ class PaymentSectionRide extends StatelessWidget {
                                     backgroundColor: isButtonEnabled ? OkejekTheme.primary_color : Colors.grey,
                                   ),
                                   child: okeRideController.isCreatingOrder.value
-                                      ? SizedBox(height: 20, width: 20, child: LoadingAnimation())
+                                      ? SizedBox(height: 30, width: 30, child: LoadingAnimation())
                                       : Text(
                                           'Pesan Sekarang',
                                           style: TextStyle(

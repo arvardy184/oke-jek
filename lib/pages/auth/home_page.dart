@@ -325,7 +325,11 @@ Column(
                             ),
                             errorWidget: (context, url, error) => Container(
                               color: Colors.grey[200],
-                              child: Icon(Icons.broken_image_rounded),
+                              child: Image.asset(
+                                'assets/images/default.png',
+                                fit: BoxFit.cover,
+                             
+                              ),
                             ),
                           ),
                         ),

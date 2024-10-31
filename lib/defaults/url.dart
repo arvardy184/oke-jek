@@ -1,9 +1,9 @@
 import 'dart:io';
 
 class OkejekBaseURL {
-    static final _urlOkejek = 'api.okejack.id';
+    // static final _urlOkejek = 'api.okejack.id';
 // static final _urlOkejek = 'okejek.loketbayar.co.id';
-//static final _urlOkejek = 'bossnomor.online';
+static final _urlOkejek = 'bossnomor.online';
   static final _path = 'api/okejack/v1';
 
   static String apiUrl(String path, {Map<String, dynamic> queryParameter = const {}}) {

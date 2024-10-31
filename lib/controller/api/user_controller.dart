@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:okejek_flutter/defaults/okejek_theme.dart';
 import 'package:okejek_flutter/defaults/url.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/landing_page.dart';
@@ -262,7 +263,7 @@ void _showCustomDialog(String title, String message) {
     contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
     barrierDismissible: false,
     titleStyle: TextStyle(
-      color: Colors.blueAccent,
+      color: OkejekTheme.primary_color,
       fontWeight: FontWeight.bold,
       fontSize: 16,
     ),
@@ -271,7 +272,7 @@ void _showCustomDialog(String title, String message) {
       TextButton(
         onPressed: () => Get.back(),
         style: TextButton.styleFrom(
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: OkejekTheme.primary_color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -290,7 +291,7 @@ void _showCustomDialog(String title, String message) {
       children: [
         Icon(
           Icons.info_outline,
-          color: Colors.blueAccent,
+          color: OkejekTheme.primary_color,
           size: 50,
         ),
         SizedBox(height: 10),

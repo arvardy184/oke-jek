@@ -200,15 +200,17 @@ Future<void> refreshOrderStatus() async {
     }
   } catch (e) {
     print('Error refreshing order status: $e');
+    Get.to(
+      () => BottomNavigation); //cek lagi
     // Optionally show error message to user
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal memperbarui status pesanan'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    // if (mounted) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('Gagal memperbarui status pesanan'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    // }
   }
 }
 
