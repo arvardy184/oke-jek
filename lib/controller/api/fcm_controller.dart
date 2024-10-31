@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:okejek_flutter/defaults/url.dart';
+import 'package:okejek_flutter/pages/auth/order/chat_page.dart';
 import 'package:okejek_flutter/pages/landing_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,22 +52,50 @@ class FCMController extends GetxController {
     }
   }
 
+  void _navigateToChatPage(String orderId) {
+  Get.to(() => ChatPage(orderId: orderId));
+}
+
+void _handleChatNotification(Map<String, dynamic> data) async{
+  String orderId = data['order_id'] ?? '';
+  if(orderId != ''){
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('order_id', orderId);
+    _navigateToChatPage(orderId
+    );
+    
+  }
+
+  print("Handle chat notification: $data");
+}
+
+
   Future<void> _setupFirebaseMessaging() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("Received foreground message: ${message.messageId}");
       _handleMessage(message);
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("App opened by clicking on notification: ${message.messageId}");
-      _handleMessage(message);
-    });
-
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      print("App opened from terminated state by notification: ${initialMessage.messageId}");
-      _handleMessage(initialMessage);
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    print("App opened by clicking on notification: ${message.messageId}");
+    if (message.data['__type'] == 'chat') {
+      String? orderId = message.data['order_id'];
+      if (orderId != null) {
+        _navigateToChatPage(orderId);
+      }
     }
+  });
+
+   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    print("App opened from terminated state by notification: ${initialMessage.messageId}");
+    if (initialMessage.data['__type'] == 'chat') {
+      String? orderId = initialMessage.data['order_id'];
+      if (orderId != null) {
+        _navigateToChatPage(orderId);
+      }
+    }
+  }
   }
 
 
@@ -188,13 +217,13 @@ class FCMController extends GetxController {
   Future<void> _showDataNotification(Map<String, dynamic> data) async {
     String title = data['msg_title'] ?? 'New Message';
     String body = data['msg_body'] ?? 'You have a new message';
-    String type = data['type'] ?? 'etc';
+    String type = data['__type'] ?? 'etc';
 
     // Determine channel based on notification type
     String channelId = 'etc';
     if (type == 'order_update') {
       channelId = 'order';
-    } else if (type == 'chat_message') {
+    } else if (type == 'chat') {
       channelId = 'chat';
     } else if (type == 'news') {
       channelId = 'news';
@@ -223,31 +252,37 @@ class FCMController extends GetxController {
     print("Showing data notification: Title - $title, Body - $body, Channel - $channelId");
   }
 
-  void _handleMessage(RemoteMessage message) {
-    print("Handling message: ${message.messageId}");
-    print("Message data: ${message.data}");
-    print("Message notification: ${message.notification?.toMap()}");
+ void _handleMessage(RemoteMessage message) {
+  print("Handling message: ${message.messageId}");
+  print("Message data: ${message.data}");
+  print("Message data type ${message.data['type']}");
+  print("Message data --type ${message.data['__type']}");
+  print("Message notification: ${message.notification?.toMap()}");
 
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
 
-    if (notification != null) {
-      _showNotification(notification, android);
-    } else if (message.data.isNotEmpty) {
-      // Handle data message
-      _showDataNotification(message.data);
-    } else if (message.notification != null) {
-      _showNotification(message.notification!, message.notification?.android);
-    } else if (message.data['type'] == 'order_update') {
-      print("Received order update notification");
-      // _handleOrderUpdate(message.data);
-    } else {
-      print("Received empty message");
-    }
-
-    _latestMessage.value = "${message.data['msg_title'] ?? 'No Title'} : ${message.data['msg_body'] ?? 'No Body'}";
-    print("Latest message: ${_latestMessage.value}");
+  if (notification != null) {
+    _showNotification(notification, android);
+  } else if (message.data.isNotEmpty) {
+    // Handle data message
+    _showDataNotification(message.data);
+  } else if (message.notification != null) {
+    _showNotification(message.notification!, message.notification?.android);
+  } else if (message.data['__type'] == 'order_update') {
+    print("Received order update notification");
+    // _handleOrderUpdate(message.data);
+  } else {
+    print("Received empty message");
   }
+
+//  if (message.data['__type'] == 'chat') {
+//     print("Received chat message notification");
+//     _handleChatNotification(message.data);
+//   }
+  _latestMessage.value = "${message.data['msg_title'] ?? 'No Title'} : ${message.data['msg_body'] ?? 'No Body'}";
+  print("Latest message: ${_latestMessage.value}");
+}
 
   Future<void> refreshAndRegisterToken() async {
     try {

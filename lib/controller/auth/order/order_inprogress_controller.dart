@@ -100,40 +100,52 @@ orderStatus.value = order.status;
     return _markers;
   }
 
-  void cancelOrder(int id) async {
-    // show loading process
-    Get.back();
-    showLoading();
+Future<void> cancelOrder(int id) async {
+  // show loading process
+  showLoading();
 
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? session = preferences.getString("user_session");
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  String? session = preferences.getString("user_session");
 
-    try {
-      // String url = OkejekBaseURL.cancelOrder(id);
-      String url = OkejekBaseURL.apiUrl('orders/cancel/$id');
+  try {
+    String url = OkejekBaseURL.apiUrl('orders/cancel/$id');
+    print('Cancel order URL: $url');
 
-      var queryParams = {
-        'api_token': session,
-      };
+    var queryParams = {
+      'api_token': session,
+    };
 
-      await dio.get(
-        url,
-        queryParameters: queryParams,
-        options: Options(
-          headers: {
-            'Accepts': 'application/json',
-          },
-        ),
-      );
+    var response = await dio.get(
+      url,
+      queryParameters: queryParams,
+      options: Options(
+        headers: {
+          'Accepts': 'application/json',
+        },
+      ),
+    );
 
-      debugPrint('cancel success');
+    var responseBody = response.data;
+    print('Cancel order response: $responseBody');
 
+    BaseResponse responseData = BaseResponse.fromJson(responseBody);
+    print('Cancel order response data: $responseData');
+
+    if (responseData.success) {
+      print('Cancel order success');
+      Get.back();
       successCancel();
-    } on DioException catch (e) {
-      print(e.message);
+    } else {
+      print('Failed to cancel order');
       failedToCancel();
     }
+  } catch (e) {
+    print('Error canceling order: $e');
+    failedToCancel();
+  } finally {
+    Get.back(); // Close the loading dialog
   }
+}
 
   void showLoading() {
     Get.dialog(

@@ -269,32 +269,32 @@ class PaymentSectionRide extends StatelessWidget {
     );
 
     // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(
-        "Pesanan Gagal",
-        style: TextStyle(
-          fontSize: SizeConfig.safeBlockHorizontal * 14 / 3.6,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: Text(
-        "Tidak dapat melakukan pesanan saat ini dikarenakan $message",
-        style: TextStyle(
-          fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6,
-        ),
-      ),
-      actions: [
-        okButton,
-      ],
-    );
+    // AlertDialog alert = AlertDialog(
+    //   title: Text(
+    //     "Pesanan Gagal",
+    //     style: TextStyle(
+    //       fontSize: SizeConfig.safeBlockHorizontal * 14 / 3.6,
+    //       fontWeight: FontWeight.bold,
+    //     ),
+    //   ),
+    //   content: Text(
+    //     "Tidak dapat melakukan pesanan saat ini dikarenakan $message",
+    //     style: TextStyle(
+    //       fontSize: SizeConfig.safeBlockHorizontal * 12 / 3.6,
+    //     ),
+    //   ),
+    //   actions: [
+    //     okButton,
+    //   ],
+    // );
 
     // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return alert;
+    //   },
+    // );
   }
 
   Widget loadingPayment() {

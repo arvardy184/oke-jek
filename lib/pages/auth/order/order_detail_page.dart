@@ -63,9 +63,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         handleOrderCompletion();
       } else if (order.status == -1) {
         handleOrderCancellation();
-      } else if(order.status == 0){
-
-      }
+      } 
     });
   }
 
@@ -80,77 +78,94 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       duration: const Duration(milliseconds: 300),
     );
 
-    landingController.changeTab(0);
+    landingController.changeTab(1);
   }
 
-  void handleOrderCancellation() async {
+
+void handleOrderCancellation() async {
+    
     stopOrderStatusUpdates();
     historyController.driverLocationTimer?.cancel();
     chatController.stopPolling();
 
-    // Show dialog and handle navigation
-    Get.defaultDialog(
-      title: 'Pesanan Dibatalkan',
-      titleStyle: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.cancel_outlined,
-            color: Colors.red,
-            size: 50,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Pesanan Anda telah dibatalkan.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Apakah Anda ingin membuat pesanan baru?',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
-        ],
-      ),
-      radius: 10,
-      barrierDismissible: true,
-      onWillPop: () async{
-        navigateAfterCancellation(false);
-        return true;
-      },
-      actions: [
-        TextButton(
-          onPressed: () => navigateAfterCancellation(false),
-          child: Text(
-            'Tidak',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-        ElevatedButton(
-         onPressed: () {
-          Get.back();
-         },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: OkejekTheme.primary_color,
-            elevation: 0,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+   
+    if (!mounted) return;
+
+   
+    final bool? shouldMakeNewOrder = await Get.dialog<bool>(
+      WillPopScope(
+        // Mencegah dialog ditutup dengan back button
+        onWillPop: () async {
+          Get.back(result: false);
+          return false;
+        },
+        child: AlertDialog(
+          title: Text(
+            'Pesanan Dibatalkan',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          child: Text(
-            'Ya, Pesan Lagi',
-            style: TextStyle(color: Colors.white),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.cancel_outlined,
+                color: Colors.red,
+                size: 50,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Pesanan Anda telah dibatalkan.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Apakah Anda ingin membuat pesanan baru?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+            ],
           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: Text(
+                'Tidak',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: OkejekTheme.primary_color,
+                elevation: 0,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Ya, Pesan Lagi',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+      barrierDismissible: false, 
     );
-  }
+
+    if (!mounted) return;
+
+    // Lakukan navigasi berdasarkan hasil dialog
+    navigateAfterCancellation(shouldMakeNewOrder ?? false);
+}
 
     void navigateAfterCancellation(bool makeNewOrder) {
     Get.to(
@@ -158,7 +173,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       transition: Transition.fadeIn,
       duration: const Duration(milliseconds: 300),
     );
-    
+
     if (makeNewOrder) {
       landingController.changeTab(0); // Go to order tab
     } else {
@@ -226,7 +241,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     } catch (e) {
       print('Error refreshing order status: $e');
       // Handle error by navigating back
-      Get.off(() => BottomNavigation());
+      Get.to(() => BottomNavigation());
       landingController.changeTab(1); // Go to history tab
     }
   }
@@ -281,14 +296,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
   }
 
-// Future<void> refreshOrderDetails()async{
-//   if(isRefreshing.value) return;
-
-//   isRefreshing.value = true;
-//   try{
-//     Order updateOrder = await orderController.getOrderDetails(currentOrder.value.id);
-//   }
-// }
   @override
   Widget build(BuildContext context) {
     print("di order detail page ${historyController.driverLocation}");
@@ -306,7 +313,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           Get.off(() => ReceiptOrderDetail(order: currentOrder.value));
           return false;
         } else if (currentOrder.value.status == -1) {
-          Get.off(() => BottomNavigation());
+          Get.to(() => BottomNavigation());
           landingController.changeTab(1);
           return false;
         }
@@ -352,7 +359,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   // onTap: () => Get.back(),
                   onTap: () {
                     // Navigate back to BottomNavigation
-                    Get.off(() => BottomNavigation(), transition: Transition.fadeIn);
+                    Get.to(() => BottomNavigation(), transition: Transition.fadeIn);
                     // Get.back();
 
                     // Change tab, reset controller, fetch history, and reset filter
