@@ -21,8 +21,7 @@ class LandingPage extends StatelessWidget {
     if (landingController.isOutdated.value) showAlertUpdate();
 
     return Scaffold(
-       backgroundColor: OkejekTheme.primary_color,
-      
+      backgroundColor: OkejekTheme.primary_color,
       body: DoubleBack(
         message: "Tap lagi untuk keluar",
         textStyle: TextStyle(fontSize: 12, color: Colors.white),
@@ -36,7 +35,7 @@ class LandingPage extends StatelessWidget {
               ),
               Center(
                 child: Container(
-                  height: Get.height /7,
+                  height: Get.height / 7,
                   child: Image.asset(
                     'assets/images/ic_launcher.png',
                     // width: Get.height /4,
@@ -180,29 +179,25 @@ class LandingPage extends StatelessWidget {
                 height: SizeConfig.blockSizeVertical * 2.5,
               ),
               Center(
-                child: Text(
-                  'Versi '.tr + '90000 build 7.0.0'.tr,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
-                        fontSize: SizeConfig.safeBlockHorizontal * 3.5,
-                      ),
-                ),
+                child: Obx(() => Text(
+                      'Versi '.tr + '${landingController.versionName.value}'.tr,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Colors.white,
+                            fontSize: SizeConfig.safeBlockHorizontal * 3.5,
+                          ),
+                    )),
               ),
               SizedBox(
                 height: 30,
               ),
               Center(
                 child: TextButton(
-                  onPressed: () => landingController.openBrowserPrivacy(),
-                  child: Text(
-                    'Ketentuan dan Kebijakan'.tr,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.white,
-                          fontSize: SizeConfig.safeBlockHorizontal * 3.5,
-                    )
-                  )
-                 
-                ),
+                    onPressed: () => landingController.openBrowserPrivacy(),
+                    child: Text('Ketentuan dan Kebijakan'.tr,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: Colors.white,
+                              fontSize: SizeConfig.safeBlockHorizontal * 3.5,
+                            ))),
               ),
             ],
           ),

@@ -15,15 +15,15 @@ import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/auth/okefood/detail_outlet_page.dart';
 import 'package:okejek_flutter/pages/auth/order/order_detail_page.dart';
 import 'package:okejek_flutter/pages/deeplink_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class LandingController extends GetxController {
-  var versionBuild = "43060".obs;
-  var versionName = "4.3.4".obs;
+  var versionBuild = "".obs;
+  var versionName = "".obs;
   var isOutdated = false.obs;
   var currentTab = 0.obs;
   var deeplinkUrl = ''.obs;
@@ -37,8 +37,17 @@ class LandingController extends GetxController {
   void onInit() {
     super.onInit();
     deepLink();
-    getVersion();
     getPermission();
+    checkVersion();
+  }
+
+  void checkVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
+    String version = packageInfo.version;
+    versionBuild.value = appVersion;
+    versionName.value = version;
+    print("version name $versionName");
   }
 
   void getPermission() async {
@@ -235,7 +244,6 @@ class LandingController extends GetxController {
     }
   }
 
-  getVersion() {}
 
   updateVersion() async {
     String url = 'https://play.google.com/store/apps/details?id=id.okejack.okejackapp';

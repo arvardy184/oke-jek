@@ -34,6 +34,7 @@ class ProfileController extends GetxController {
     isLoading.value = false;
   }
 
+
   void editProfil() async {
     isLoading.value = true;
     SharedPreferences preferences = await SharedPreferences.getInstance();

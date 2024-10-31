@@ -10,6 +10,7 @@ import 'package:okejek_flutter/defaults/url.dart';
 import 'package:okejek_flutter/pages/auth/profile/edit_profile_page.dart';
 import 'package:okejek_flutter/pages/auth/profile/help_and_support_page.dart';
 import 'package:okejek_flutter/widgets/dialog.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -32,6 +33,7 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildMenuSections(context),
                 const SizedBox(height: 24),
+              
                 _buildAppVersion(),
                 const SizedBox(height: 32),
               ],
@@ -394,10 +396,10 @@ class ProfilePage extends StatelessWidget {
       confirmColor: OkejekTheme.primary_color,
       icon: Icons.exit_to_app,
     );
-  }
-  Widget _buildAppVersion() {
+  }Widget _buildAppVersion()  {
+    
     return Text(
-      'Version 7.0.0',
+      'Version ${userController.versionApp.value}',
       style: TextStyle(
         fontSize: 12,
         color: Colors.grey[600],

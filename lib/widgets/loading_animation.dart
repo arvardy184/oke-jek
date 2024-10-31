@@ -19,8 +19,8 @@ class LoadingAnimation extends StatelessWidget {
           indicatorType: Indicator.lineScaleParty,
           strokeWidth: 10.0,
           colors: [
-            Color(0xFFF3DBDB),
-            Color(0XFFC74A3F),
+           Colors.deepPurpleAccent,
+            Color(0XFF3c2782),
           ],
           backgroundColor: Colors.transparent,
           pathBackgroundColor: Colors.black,
@@ -43,7 +43,7 @@ class LoadinBallSyncAnimation extends StatelessWidget {
       child: LoadingIndicator(
         indicatorType: Indicator.ballSpinFadeLoader,
         strokeWidth: 2,
-        colors: [Color(0XFFC74A3F)],
+        colors: [Color(0XFF3c2782)],
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:okejek_flutter/defaults/okejek_theme.dart';
 import 'package:okejek_flutter/defaults/url.dart';
 import 'package:okejek_flutter/models/base_response_model.dart';
 import 'package:okejek_flutter/pages/landing_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ class UserController extends GetxController {
   var cityId = 0.obs;
   var balance = ''.obs;
   var isServiceAvailable = true.obs;
+  var versionApp = ''.obs;
 
   void onInit() async {
     super.onInit();
@@ -34,6 +36,7 @@ class UserController extends GetxController {
     getCurrentLocation();
     await getCurrentAddress();
     convertBalance();
+    checkVersion();
   }
 
   @override
@@ -45,6 +48,15 @@ class UserController extends GetxController {
   void delete() {
     super.onDelete();
     dio.interceptors.clear();
+  }
+
+
+  void checkVersion() async{
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String appVersion = packageInfo.buildNumber;
+    String versionName = packageInfo.version;
+
+    versionApp.value = versionName + ' (' + appVersion + ')';
   }
 
   Future<bool> checkingUserSession() async {

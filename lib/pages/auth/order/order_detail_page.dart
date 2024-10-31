@@ -37,7 +37,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   final OrderInProgressController orderController = Get.put(OrderInProgressController());
   final ChatController chatController = Get.put(ChatController());
-    final OrderReceiptController orderReceiptController = Get.put(OrderReceiptController());
+  final OrderReceiptController orderReceiptController = Get.put(OrderReceiptController());
   // final Completer<GoogleMapController> _controller = Completer();
 
   final PanelController _pc = new PanelController();
@@ -57,14 +57,30 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     chatController.startPolling(currentOrder.value.id.toString());
     startOrderStatusUpdates();
     //historyController.getNearestDriver();
-     ever(currentOrder, (Order order) {
+    ever(currentOrder, (Order order) {
       if (order.status == 3 && !hasNavigatedToReceipt) {
         hasNavigatedToReceipt = true;
         handleOrderCompletion();
-      } else if(order.status == -1){
+      } else if (order.status == -1) {
         handleOrderCancellation();
+      } else if(order.status == 0){
+
       }
     });
+  }
+
+  void handleSkippedOrder() {
+    stopOrderStatusUpdates();
+    historyController.driverLocationTimer?.cancel();
+    chatController.stopPolling();
+
+       Get.to(
+      () => BottomNavigation(),
+      transition: Transition.fadeIn,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    landingController.changeTab(0);
   }
 
   void handleOrderCancellation() async {
@@ -72,79 +88,85 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     historyController.driverLocationTimer?.cancel();
     chatController.stopPolling();
 
- // Show dialog and handle navigation
-  Get.defaultDialog(
-    title: 'Pesanan Dibatalkan',
-    titleStyle: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.cancel_outlined,
-          color: Colors.red,
-          size: 50,
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Pesanan Anda telah dibatalkan.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Apakah Anda ingin membuat pesanan baru?',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-        ),
-      ],
-    ),
-    radius: 10,
-    barrierDismissible: false, // Prevent dismissing by tapping outside
-    actions: [
-      TextButton(
-        onPressed: () {
-          Get.to(
-            () => BottomNavigation(),
-            transition: Transition.fadeIn,
-            duration: const Duration(milliseconds: 300),
-          );
-          landingController.changeTab(1); // Go to history tab
-          historyController.fetchHistory(); // Refresh history
-        },
-        child: Text(
-          'Tidak',
-          style: TextStyle(color: Colors.grey),
-        ),
+    // Show dialog and handle navigation
+    Get.defaultDialog(
+      title: 'Pesanan Dibatalkan',
+      titleStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
       ),
-      ElevatedButton(
-        onPressed: () {
-          Get.to(
-            () => BottomNavigation(),
-            transition: Transition.fadeIn,
-            duration: const Duration(milliseconds: 300),
-          );
-          landingController.changeTab(0); // Go to order tab
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: OkejekTheme.primary_color,
-          elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.cancel_outlined,
+            color: Colors.red,
+            size: 50,
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Pesanan Anda telah dibatalkan.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Apakah Anda ingin membuat pesanan baru?',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+        ],
+      ),
+      radius: 10,
+      barrierDismissible: true,
+      onWillPop: () async{
+        navigateAfterCancellation(false);
+        return true;
+      },
+      actions: [
+        TextButton(
+          onPressed: () => navigateAfterCancellation(false),
+          child: Text(
+            'Tidak',
+            style: TextStyle(color: Colors.grey),
           ),
         ),
-        child: Text(
-          'Ya, Pesan Lagi',
-          style: TextStyle(color: Colors.white),
+        ElevatedButton(
+         onPressed: () {
+          Get.back();
+         },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: OkejekTheme.primary_color,
+            elevation: 0,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(
+            'Ya, Pesan Lagi',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-    ],
-  );
-
+      ],
+    );
   }
+
+    void navigateAfterCancellation(bool makeNewOrder) {
+    Get.to(
+      () => BottomNavigation(),
+      transition: Transition.fadeIn,
+      duration: const Duration(milliseconds: 300),
+    );
+    
+    if (makeNewOrder) {
+      landingController.changeTab(0); // Go to order tab
+    } else {
+      landingController.changeTab(1); // Go to history tab
+      historyController.fetchHistory(); // Refresh history
+    }
+  }
+
   void handleOrderCompletion() async {
     // Stop all ongoing processes
     stopOrderStatusUpdates();
@@ -162,7 +184,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-
   void startOrderStatusUpdates() {
     _timer = Timer.periodic(Duration(seconds: 5), (_) {
       refreshOrderStatus();
@@ -174,45 +195,41 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     _timer = null;
   }
 
-Future<void> refreshOrderStatus() async {
-  if (!mounted) return;
-  
-  try {
-    Order updatedOrder = await orderController.getOrderDetails(currentOrder.value.id);
-    if (updatedOrder.status != currentOrder.value.status) {
-      currentOrder.value = updatedOrder;
-      historyController.updateDriverLocation(updatedOrder);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_getStatusUpdateMessage(updatedOrder.status)),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(16),
-            backgroundColor: _getStatusColor(updatedOrder.status),
-          ),
-        );
+ Future<void> refreshOrderStatus() async {
+    if (!mounted) return;
+
+    try {
+      Order updatedOrder = await orderController.getOrderDetails(currentOrder.value.id);
+      if (updatedOrder.status != currentOrder.value.status) {
+        currentOrder.value = updatedOrder;
+        historyController.updateDriverLocation(updatedOrder);
+
+        if (mounted) {
+          // Only show snackbar for non-terminal states
+          if (![3, -1, 0].contains(updatedOrder.status)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(_getStatusUpdateMessage(updatedOrder.status)),
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: const EdgeInsets.all(16),
+                backgroundColor: _getStatusColor(updatedOrder.status),
+              ),
+            );
+          }
+        }
       }
+    } catch (e) {
+      print('Error refreshing order status: $e');
+      // Handle error by navigating back
+      Get.off(() => BottomNavigation());
+      landingController.changeTab(1); // Go to history tab
     }
-  } catch (e) {
-    print('Error refreshing order status: $e');
-    Get.to(
-      () => BottomNavigation); //cek lagi
-    // Optionally show error message to user
-    // if (mounted) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('Gagal memperbarui status pesanan'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
   }
-}
 
 
   @override
@@ -234,8 +251,7 @@ Future<void> refreshOrderStatus() async {
     _timer = null;
   }
 
-
-String _getStatusUpdateMessage(int status) {
+  String _getStatusUpdateMessage(int status) {
     switch (status) {
       case 0:
         return 'Mencari driver terdekat...';
@@ -276,7 +292,7 @@ String _getStatusUpdateMessage(int status) {
   @override
   Widget build(BuildContext context) {
     print("di order detail page ${historyController.driverLocation}");
-      print("cek total pembayaran ${currentOrder.value.payment?.amount}");
+    print("cek total pembayaran ${currentOrder.value.payment?.amount}");
     double lat = double.parse(currentOrder.value.originLatlng.split(",")[0]);
     double lng = double.parse(currentOrder.value.originLatlng.split(",")[1]);
 
@@ -288,6 +304,10 @@ String _getStatusUpdateMessage(int status) {
       onWillPop: () async {
         if (currentOrder.value.status == 3) {
           Get.off(() => ReceiptOrderDetail(order: currentOrder.value));
+          return false;
+        } else if (currentOrder.value.status == -1) {
+          Get.off(() => BottomNavigation());
+          landingController.changeTab(1);
           return false;
         }
         return true;
@@ -334,7 +354,7 @@ String _getStatusUpdateMessage(int status) {
                     // Navigate back to BottomNavigation
                     Get.off(() => BottomNavigation(), transition: Transition.fadeIn);
                     // Get.back();
-      
+
                     // Change tab, reset controller, fetch history, and reset filter
                     landingController.changeTab(1);
                     // historyController.resetController();
@@ -379,7 +399,6 @@ String _getStatusUpdateMessage(int status) {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-      
       ),
       width: Get.width,
       height: Get.height,
@@ -416,88 +435,87 @@ String _getStatusUpdateMessage(int status) {
   }
 
   Widget _buildOrderTypeAndStatus(OrderInProgressController orderController) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start, // Align items to top
-    children: [
-      Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildOrderTypeIcon(),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildOrderTypeText(),
-                  SizedBox(height: 8),
-                  _buildOrderStatus(),
-                ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align items to top
+      children: [
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildOrderTypeIcon(),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildOrderTypeText(),
+                    SizedBox(height: 8),
+                    _buildOrderStatus(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      SizedBox(width: 12),
-      _buildPriceText(),
-    ],
-  );
-}
+        SizedBox(width: 12),
+        _buildPriceText(),
+      ],
+    );
+  }
 
-Widget _buildOrderTypeText() {
-  return Text(
-    _getOrderTypeName(currentOrder.value.typeAsInt),
-    style: TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-    ),
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-  );
-}
-
-Widget _buildPriceText() {
-  return Container(
-    constraints: BoxConstraints(maxWidth: Get.width * 0.3),
-    child: Text(
-      currentOrder.value.payment == null ? '-' : 
-      currencyFormatter.format(currentOrder.value.payment!.amount),
+  Widget _buildOrderTypeText() {
+    return Text(
+      _getOrderTypeName(currentOrder.value.typeAsInt),
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-    ),
-  );
-}
+    );
+  }
 
-String _getOrderTypeName(dynamic type) {
-  if (type is String) {
-    type = int.tryParse(type) ?? -1;
+  Widget _buildPriceText() {
+    return Container(
+      constraints: BoxConstraints(maxWidth: Get.width * 0.3),
+      child: Text(
+        currentOrder.value.payment == null ? '-' : currencyFormatter.format(currentOrder.value.payment!.amount),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
-  
-  switch (type) {
-    case 0:
-      return 'OkeRide';
-    case 1:
-      return 'Kurir';
-    case 2:
-      return 'Belanja';
-    case 3:
-      return 'Oke Food';
-    case 4:
-      return 'Oke Car';
-    case 100:
-      return 'Oke Mart';
-    case 102:
-      return 'Ojek Roda 3';
-    case 20:
-      return 'Oke Rental';
-    default:
-      return 'Pengantaran';
+
+  String _getOrderTypeName(dynamic type) {
+    if (type is String) {
+      type = int.tryParse(type) ?? -1;
+    }
+
+    switch (type) {
+      case 0:
+        return 'OkeRide';
+      case 1:
+        return 'Kurir';
+      case 2:
+        return 'Belanja';
+      case 3:
+        return 'Oke Food';
+      case 4:
+        return 'Oke Car';
+      case 100:
+        return 'Oke Mart';
+      case 102:
+        return 'Ojek Roda 3';
+      case 20:
+        return 'Oke Rental';
+      default:
+        return 'Pengantaran';
+    }
   }
-}
 
   Widget _buildTimeline() {
     return FixedTimeline.tileBuilder(

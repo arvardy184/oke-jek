@@ -39,8 +39,8 @@ class OkeCourierMap extends StatelessWidget {
               okeCourierController.originLng.value,
             ),
           ),
-          myLocationEnabled: false,
-          compassEnabled: false,
+          myLocationEnabled: true,
+          compassEnabled: true,
           onCameraMove: (position) {
             cp = position.target;
           },
@@ -49,13 +49,14 @@ class OkeCourierMap extends StatelessWidget {
             okeRideController.getNearestDriver();
           },
           markers: Set<Marker>.of([
+            
             Marker(
               markerId: MarkerId('origin'),
               position: LatLng(
                 okeCourierController.originLat.value,
                 okeCourierController.originLng.value,
               ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
             ),
             Marker(
               markerId: MarkerId('destination'),

@@ -62,7 +62,7 @@ Future<Order> getOrderDetails(int orderId) async {
       BaseResponse responseData = BaseResponse.fromJson(responseBody);
       Order order = responseData.data.orders!;
 orderStatus.value = order.status;
-      print("response order details $order");
+      print("response order details status ${order.status}");
       print("response order details driver ${order.id}");
       return order;
     } catch (e) {

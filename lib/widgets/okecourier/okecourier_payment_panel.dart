@@ -49,7 +49,7 @@ class OkeCourierPaymentPanel extends StatelessWidget {
               height: SizeConfig.safeBlockVertical * 30 / 7.2,
             ),
             _buildInformation(
-              color: OkejekTheme.primary_color,
+              color: Colors.orange,
               label: 'Pengirim',
               nama: namaPengirimController.text,
               noHP: noHPPengirimController.text,
